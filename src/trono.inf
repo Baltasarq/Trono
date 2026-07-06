@@ -1,0 +1,3801 @@
+!% -~S~D
+! El trono de inglaterra
+! (C) 2005 Selena y Baltasar
+
+! generado por INFORMATE@txtMap, v0.2/ v0.3 20050803
+! Agosto de 2005
+! Pulido en Diciembre de 2017
+
+! Constantes
+Constant Historia "^El Trono de Inglaterra^";
+Constant Titular  "O de como Ulfius obtiene la ayuda de Merlín...^^";
+Constant HAY_CURIOSIDADES;
+Constant NUM_MONEDAS_INICIALES = 20;
+Constant MAX_RELOJES = 128;
+Constant PUNTOS_LUGAR = 10;
+Constant PUNTOS_OBJETO = 5;
+Constant HAY_TAREAS;
+Constant NUMERO_TAREAS = 9;
+Release 2;
+
+! Constantes para modificar el comportamiento del parser
+Constant PUNTUACION_MAX = 118;
+Constant ADMITIR_COMANDO_SALIDAS;
+
+! Puntuación
+Constant TAREA_CABALLERO_NEGRO = 0;
+Constant TAREA_GALAHAD = 1;
+Constant TAREA_ENCONTRAR_A_MERLIN = 2;
+Constant TAREA_CONSEGUIR_MAPA = 3;
+Constant TAREA_VOLVER_CON_MERLIN = 4;
+Constant TAREA_ENTRAR_EN_TUNEL = 5;
+Constant TAREA_COGER_LLAVE_MAESTRA = 6;
+Constant TAREA_TERMINAR_AVENTURA = 7;
+Constant TAREA_LLAVE_MERLIN = 8;
+
+Array puntuacion_tareas ->
+	9 ! caballero negro
+	3 ! galahad
+	6 ! encontrar a Merlín
+	3 ! conseguir el mapa
+	9 ! volver al castillo con Merlín
+	3 ! entrar en el castillo
+	6 ! llave maestra
+	9 ! terminar la aventura
+	3 ! Llave de merlín
+;
+
+[ ImprimirTareas cualTarea;
+	switch( cualTarea ) {
+		TAREA_CABALLERO_NEGRO: "por vencer totalmente al caballero negro";
+		TAREA_GALAHAD: "por ayudar a Galahad";
+		TAREA_ENCONTRAR_A_MERLIN: "por atravesar el laberinto";
+		TAREA_CONSEGUIR_MAPA: "por conseguir el mapa del laberinto";
+		TAREA_VOLVER_CON_MERLIN: "por volver al castillo de Westmorland con Merlín";
+		TAREA_ENTRAR_EN_TUNEL: "por entrar en el castillo de Cornualles";
+		TAREA_COGER_LLAVE_MAESTRA: "por conseguir la llave maestra";
+		TAREA_TERMINAR_AVENTURA: "por terminar la misión completamente";
+	}
+];
+
+
+Include "smw";
+
+[ curiosidades;
+	print (s_bold) "El Trono de Inglaterra^";
+
+	print "^Escrita con la ayuda de:
+			^ - InformATE! (por Graham Nelson, traducido y adaptado por Zak),
+			^ - Jif (por Alessandro Schillaci y Mapache)
+			^ - y txtMap.^";
+
+	print "^Y la inestimable colaboración de:
+			^ - Jenesis alias ~BetaTester~,
+			^ - Yokiyoki.^";
+
+	print (s_underline) "^http://caad.mine.nu/baltasarq/^";
+
+	print "^^Uther Pendragón vivió varios años más, dedicando su reinado a luchar contra
+	       los sajones. Finalmente, murió, probablemente debido a un envenenamiento provocado
+	       por espías sajones. Tanto él como su hermano, que reinó antes que él, están enterrados,
+	       según la leyenda, en Stonehenge, que fue trasladado en tiempos de Uther desde Irlanda.
+	       ^^Locres es el nombre antiguo de lo que hoy se conoce como Reino Unido.
+	       ^^Lady Ingrain se desposó con Uther; no se sabe si contenta o no, ni se sabe si le
+	       guardó rencor por haber matado a su marido o no (porque efectivamente, las tropas de
+	       Uther lo mataron cuando trataba de llegar hasta el castillo donde estaba Ingrain).
+	       ^^El padre de Lady Ingrain fue, según otra leyenda,
+	       José de Arimatea, quien se supone que tomó en un cáliz
+	       la sangre de Jesús el Nazareno mientras le estaban crucificando. Éste es, de nuevo
+	       supuestamente, el Santo Grial, perseguido por Arturo (el hijo de Uther e Ingrain)
+	       hasta la extenuación, historia que entronca con multitud de leyendas
+	       sobre sectas secretas, descritas profusamente en libros tan en boga en la
+	       actualidad.
+	";
+
+	print "^^En cuanto a ciertos símbolos que aparece en el juego, decir que
+	       ~arturo~ significa oso, mientras que el símbolo de los druídas era
+	       una serpiente sin ojos ni boca, simbolizando las fuerzas telúricas
+	       que salían de la tierra.^";
+
+	print "^^Por cierto, Westmorland existe todavía en el reino unido.^";
+
+	print "^^^Relato escrito durante el verano de 2005^^";
+	print (s_underline) "...por Selena y
+	       ^    Baltasar, el arquero.
+	       ^
+	       ^    selenavirtual@@64yahoo.com.ar
+	       ^    baltasarq@@64gmail.com^^";
+];
+
+Include "EParser";
+Include "Acciones";
+Include "Cortos";
+Include "Gramatica";
+Include "responde";
+Include "movillin";
+Include "puertas-iate";
+Include "Decorado-iate";
+
+! --- recipiente para objetos no utilizados y objetos ya utilizados -----------
+object limbo "Limbo"
+	with descripcion "limbo"
+;
+
+! Clases necesarias para el juego ---------------------------------------------
+class Localidad;
+
+class LocalidadSinLuz
+class Localidad
+;
+
+class LocalidadConLuz
+class Localidad
+has luz;
+
+class Habitacion
+class LocalidadConLuz
+;
+class Calle
+class LocalidadConLuz
+;
+
+class InteriorCueva
+class LocalidadConLuz
+;
+
+class Monte
+class LocalidadConLuz
+;
+
+class MontePedregoso
+class LocalidadConLuz
+;
+
+class Palacio
+class LocalidadConLuz
+;
+
+class ExteriorPalacio
+class LocalidadConLuz
+;
+
+class Laberinto
+class LocalidadConLuz
+;
+
+class CasaMadera
+class LocalidadConLuz
+;
+
+class Objeto;
+
+class ObjetoEstatico
+class Objeto
+has escenario;
+
+class PuestoMercado
+class ObjetoEstatico
+;
+
+class DejadoDesaparecido
+class Objeto
+with
+	prepararPerdibles [x;
+		objectloop ( x ofclass DejadoDesaparecido ) {
+			arrancarDaemon( x );
+		}
+
+		rtrue;
+	],
+	lugarDondeLaDejaste limbo,
+	despues [;
+		dejar: self.lugarDondeLaDejaste = parent( self );
+		coger: self.lugarDondeLaDejaste = limbo;
+	],
+	msgPerdida "Aquí habías dejado algo...",
+	daemon [;
+		if ( self notin jugador
+		  && parent( self ) ~= SALA_DEL_TRONO
+		  && parent( self ) ~= ALMENAR
+		  && parent( self ) ~= CASA_DE_ULFIUS
+		  && parent( self ) ~= GUARIDA_DE_MERLIN
+		  && parent( self ) ~= localizacion
+		  && parent( self ) ~= limbo )
+		{
+			! Nos roban el objeto...
+			! ¡no se puede dejar tirado por ahí!
+			move self to limbo;
+			return;
+		}
+
+		! Avisar de que la dejaste por aquí
+		if ( self in limbo
+		  && localizacion == self.lugarDondeLaDejaste )
+		{
+			self.lugarDondeLaDejaste = limbo;
+			ImprimirOEjecutar( self, msgPerdida );
+			return;
+		}
+	]
+;
+
+class ObjetoCortable
+class Objeto
+private
+	cortado false,
+with
+	objetoCortante Nothing,
+	estaCortado [;
+		return self.cortado;
+	],
+	descripcion_cortado "Está entero.",
+	descripcion_nocortado "Ha sido cortado.",
+	alCortar "Ahora está cortado.",
+	descripcion [;
+		if ( self.estaCortado() ) {
+				ImprimirOEjecutar( self, descripcion_cortado );
+		}
+		else		ImprimirOEjecutar( self, descripcion_nocortado );
+	],
+	antes [;
+		cortar, atacar:
+			if ( self.objetoCortante in jugador ) {
+				self.cortado = true;
+				print "Lanzas un par de tajos con tu espada...^";
+				ImprimirOEjecutar( self, alCortar );
+				rtrue;
+			}
+			else {
+				"No tienes con qué cortar ", (el) self, "...";
+			}
+	]
+;
+
+class ConexionAbrible
+class Conexion
+with
+	laLLave Nothing,
+	antes [;
+		echarcerrojo:
+			if ( otro == self.laLLave ) {
+				<<cerrar self>>;
+			}
+
+			"Me temo que no conseguirás cerrar ", (el) self, " con ", (el) otro, "...";
+		quitarcerrojo:
+			if ( otro == self.laLLave ) {
+				<<abrir self>>;
+			}
+
+			"Me temo que no conseguirás abrir ", (el) self, " con ", (el) otro, "...";
+	]
+;
+
+! ------------------------------ Objetos que no son personajes pero repre gente
+class Gente
+with
+	nombre_corto "gente",
+	genero G_FEMENINO,
+	nombre_f 'multitud' 'gente',
+	nombre_fp 'gentes',
+	nombre_mp 'vecinos',
+	nombre_m 'gentio',
+	conversacion [;
+		"No parecen interesados en tu conversación,
+		 sino en sus propios quehaceres.";
+	],
+	antes [;
+		escuchar: "Una gran cacofonía de múltiples conversaciones llega hasta
+		           tus oídos.";
+		examinar: rfalse;
+		oler: "La higiene en nuestra época no es -ejem- ejemplar.";
+		hablar, responder, preguntar: self.conversacion(); rtrue;
+		default: "^¡No podéis hacer eso!";
+	]
+has estatico animado femenino;
+
+! ================ Inicio ==================================================
+
+[ inicializar;
+	ModoMirar      = 2; ! Redescribir siempre
+	Modo_Notificar = 0; ! No avisar de puntuación incrementada
+	localizacion   = SALA_DEL_TRONO;
+
+
+	cambiarJugador( Ulfius );
+
+	bolsa.prepararPerdibles();	! Las clases no aceptan llamadas
+	InicializarConexiones();	! Para las puertas
+	iniciarDecorados();			! Los decorados, (pasar true para estadísticas)
+
+	print "(Aquellos que jueguen por primera vez deben teclear
+			'AYUDA' en el prompt: '>'.^Pulsa ENTER cuando veas:
+			'...'.)";
+	wait();
+	clearMainWindow();
+
+	cortoInicio.proyeccion();
+	clearMainWindow();
+];
+
+! ================= LOCALIDADES ===============
+
+MontePedregoso PLATAFORMA_ARRIBA "Plataforma pétrea"
+with
+	arriba [;
+		print "Trepas trabajosamente, durante un tiempo
+		       que se antoja eterno...^";
+		jugadorA( CUMBRE, 2 );
+		rtrue;
+          ],
+	abajo [;
+		print "Destrepas trabajosamente, durante un buen rato...^";
+		jugadorA( ABISMO, 2 );
+		rtrue;
+	],
+	descripcion
+		"La roca ha esculpido caprichosamente una ancha cornisa en este punto.
+		 La vista es espectacular, pues la altura es ahora ya considerable, hasta el
+		 punto de que notas frío. Más arriba, la cumbre nevada otorga un extraño
+		 colofón a la yerma piedra."
+	,
+;
+
+MontePedregoso CUMBRE "Cumbre"
+with
+    adentro ATALAYA,
+    al_e ATALAYA,
+    arriba "Se podría seguir ascendiendo brevemente un pequeño risco que sobrepasa
+            esta cumbre, pero no tendría mayor interés, y además, apenas hay asideros.",
+    abajo [;
+		print "^Destrepas trabajosamente, cuidándote de no desasirte de
+		       las fisuras de la roca.^";
+		jugadorA( PLATAFORMA_ARRIBA, 2 );
+		rtrue;
+    ],
+    descripcion
+	"El paisaje desde aquí es impresionante, dejando ver las altas montañas,
+	 también nevadas, en lontananza. Al este, ligeramente retirada del
+	 abismo, una pequeña atalaya domina los pasos de la sierra."
+;
+
+ObjetoEstatico cumbreFalsa "cumbre" CUMBRE
+with
+    esta_en ABISMO CUMBRE PLATAFORMA_ARRIBA ATALAYA,
+    nombre 'cumbre' 'pico',
+    descripcion
+        "La cumbre es yerma, nevada a trozos dispares.",
+    antes [;
+        examinar: rfalse;
+        default: "No sería de gran utilidad.";
+    ]
+has oculto;
+
+ObjetoEstatico paisajeAbismo "paisaje" CUMBRE
+with
+    esta_en ABISMO CUMBRE PLATAFORMA_ARRIBA ATALAYA,
+    nombre 'paisaje' 'vista',
+    descripcion
+        "El paisaje es realmente impresionante. La sierra se domina desde
+         aquí arriba.",
+    antes [;
+        examinar: rfalse;
+        default: "No sería de gran utilidad.";
+    ]
+has oculto;
+
+ObjetoEstatico falsaAtalaya "atalaya" CUMBRE
+with
+    nombre 'atalaya' 'construccion' 'torre' 'garita' 'ventanales' 'ventanal'
+           'columnas' 'columna',
+    esta_en CUMBRE ATALAYA,
+    descripcion
+        "Es una pequeña, aunque robusta, construcción de piedra. Grandes ventanales,
+         separados por estrechas columnas, conforman su cuerpo.",
+    reaccionar_antes [;
+        meterse:
+            if ( uno == self ) {
+                <<entrar>>;
+            }
+    ]
+has oculto;
+
+Laberinto ATALAYA "Atalaya"
+with
+    al_o CUMBRE,
+    afuera CUMBRE,
+    descripcion
+        "El interior es tan frío e iluminado como el exterior,
+         pues los muros están compuestos por amplios ventanales separados por
+         estrechas columnas. En el suelo, cercano a uno de los muros, puedes
+         ver un bulto con forma humana, descansando sobre el suelo."
+;
+
+respondeUnaVez pensamientosSobreGalceran
+private
+    elementos
+        "~¡Dios mío!~, piensas, ~otro amigo perdido~."
+        "Piensas: ~¿¡Por qué!?, o, mejor, ¿para qué?~"
+        "~¿Es éste el destino de un caballero, sucumbir de frío y dejado de la
+         mano de Dios, tratando de cumplir una caprichosa misión cuyo resultado,
+         si aún ventajoso para el reino, nadie puede predecir?~ - Te preguntas."
+        "~¡No es justo morir así, y encima por nada!~ - Casi lo dices en voz
+         alta, apretando los puños."
+        "~¿Qué puede impulsar a una persona racional a llevar a sus caballeros
+         más preciados a la muerte?~ - Te preguntas."
+        "~Cedería gustoso mi puesto en esta misión. Ojalá pudiera renunciar a
+         toda esta sinrazón, y vagar lejos...~ - A pesar de todo, en tu interior
+         te recuerdas a ti mismo que estás al servicio del Rey."
+;
+
+ObjetoEstatico cadaver "cadáver" ATALAYA
+with
+    nombre 'cadaver' 'galceran' 'caballero' 'bulto'
+           'hombre' 'persona' 'humano' 'humana' 'forma',
+    descripcion [;
+        print "Se trata de Galcerán, caballero del rey. O lo que queda de él,
+               en realidad. El cadáver está grotescamente congelado, y Galcerán,
+               descubres aliviado, muestra un rostro tranquilo y relajado, con
+               los ojos cerrados.^^";
+
+        print (string) pensamientosSobreGalceran.dev_msg(), "^";
+    ],
+    antes [;
+        examinar: rfalse;
+        default: "Será mejor dejar que Galcerán descanse en paz.";
+    ]
+;
+
+MontePedregoso ABISMO "Abismo"
+private
+	puente false,
+with
+	descripcion " El camino	 termina aquí abruptamente, si bien parece que podría seguir, más estrecho,
+				 hacia el norte.
+				 El suelo, que hasta ahora era pedregoso,
+				 es extrañamente arenoso aquí. Ante tí, hacia el norte,
+				 puedes ver lo que parece ser otra montaña,
+				 desgraciadamente demasiado lejos como para saltar.
+				 Hacia arriba, puedes ver una pared de roca, con algunos asideros que hacen
+				 posible escalarla.
+				 A tus pies, un pronunciado desfiladero se abre amenazador.",
+	arriba [;
+		print "^Con dificultad, te agarras a los pocos asideros que encuentras,
+		       y vas haciendo tu viaje hacia arriba.^";
+		jugadorA( PLATAFORMA_ARRIBA, 2 );
+		rtrue;
+	],
+	abajo "Tras considerarlo, decides no hacerlo. Hay muchas más posibilidades
+	       de ascender que de descender con éxito.",
+	al_n [;
+		if ( self.puente ) {
+			print "^Cruzas dificultosamente por donde estaba el puente
+			 que entreviste con la ingestión de la seta...^";
+      		jugadorA( ENTRADA_A_LA_CUEVA      		, 2 );
+      		rtrue;
+		}
+		else "¡¡Te matarías!!";
+	],
+	al_o CAMINO_ENTRE_DESFILADEROS,
+	mostrarPuente [;
+		self.puente = true;
+
+		"tu sorpresa es mayúscula al ver
+		aparecer un puente colgante delante de ti, entre la bruma.
+		Un extraño y repentino sabor
+		a cacahuetes parece inundar tu boca...^^
+		El efecto se pasa y todo parece normal... no hay ningún
+		puente colgante a la vista, o eso es lo que parece...";
+	]
+;
+
+ObjetoEstatico cieloFalso "estrellas" ABISMO
+with
+	esta_en ABISMO CAMINO_ENTRE_DESFILADEROS CUMBRE PLATAFORMA_ARRIBA ATALAYA,
+	nombre_m 'sol' 'cielo',
+	nombre_f 'estrella' 'luna',
+	nombre_fp 'estrellas',
+	genero G_FEMENINO + G_PLURAL,
+	descripcion "El cielo comienza a oscurecerse mientras las estrellas, pequeños alfileres de
+	             luz, aparecen. La luna, aunque pálida, parece querer entrar en escena.",
+	antes [;
+		tocar, probar, oler:
+			"Obviamente, no puedes hacer eso.";
+	],
+	reaccionar_antes [;
+		examinar:
+			if ( uno == obj_arriba ) {
+				<<examinar self>>;
+			}
+	]
+;
+
+ObjetoEstatico elAbismo "abismo" ABISMO
+with
+	esta_en ABISMO CAMINO_ENTRE_DESFILADEROS PLATAFORMA_ARRIBA CUMBRE
+	        ENTRADA_A_LA_CUEVA,
+	nombre_m 'risco' 'abismo''vacio' 'desfiladero' 'saliente'
+	         'escarpado' 'fondo',
+	nombre_f 'fisura' 'pared' 'piedra' 'roca' 'pendiente' 'escarpada',
+	genero G_MASCULINO,
+	descripcion "Un profundo vacío de paredes de fría y lisa roca, se extiende a tus pies.
+	             No se ve el fondo. En realidad, la pared continúa tanto hacia abajo
+	             como hacia arriba.",
+	antes [;
+		saltarsobre, meterse: "No puedes saltar tan lejos...";
+	],
+	reaccionar_antes [;
+		subir, trepar:
+		 	<<ir obj_arriba>>;
+		bajar:
+		    <<ir obj_abajo>>;
+		ponerSobre, lanzar:
+			if ( uno == estanteria
+			  && otro == self )
+			{
+				move estanteria to limbo;
+				"Colocas la estantería atravesando el abismo, pero
+				no es lo suficientemente
+				larga. El tablón cae rápidamente en el oscuro abismo,
+				hasta que ya
+				no se distingue a la vista. Momentos después, oyes un lejano golpe.
+				Perdida está...";
+			}
+			else
+			if ( otro == self ) {
+				"No quiero perder ", (el) uno, "...";
+			}
+
+	]
+;
+
+ObjetoEstatico laCornisa "cornisa" ABISMO
+with
+    esta_en ABISMO PLATAFORMA_ARRIBA,
+	nombre_m 'saliente',
+	nombre_f 'cornisa' 'plataforma' 'petrea',
+	genero G_FEMENINO,
+	descripcion [;
+		<examinar elAbismo>;
+		"Permaneces, casi colgado sobre el abismo, en un estrecho saliente.";
+	]
+;
+
+
+ExteriorPalacio ALMENAR "Almenar"
+with
+	descripcion " Desde aquí se ve la pequeña villa de Westmorland, protegida por la muralla exterior, a los pies de este castillo. Hacia el sur, se encuentran los campos de cultivo que sustentan a las gentes del lugar, mientras que hacia el norte un corto espacio dedicado a campos antecede al bosque, para terminar en las lejanas montañas. En ese terreno no se puede ir a caballo.",
+	abajo PATIO_DE_ARMAS,
+
+;
+
+ObjetoEstatico BosqueFalsoAlmenar "bosque" ALMENAR
+with
+          esta_en ALMENAR PUERTA_NORTE PUERTA_SUR CAMPOS_DE_CULTIVO CAMINO,
+	nombre 'bosque' 'arboles' 'paisaje',
+	descripcion "El bosque se antoja, incluso desde aquí, frondoso y húmedo."
+;
+
+ObjetoEstatico VillaFalsaAlmenar "villa" ALMENAR
+with
+          esta_en ALMENAR PUERTA_NORTE PUERTA_SUR CAMPOS_DE_CULTIVO CAMINO,
+	nombre 'villa' 'pueblo' 'westmorland' 'ciudad'
+	       'poblacion' 'paisaje' 'castillo' ,
+	descripcion "La villa se arracima alrededor del castillo."
+has femenino;
+
+ObjetoEstatico MontanaFalsaAlmenar "montañas" ALMENAR
+with
+          esta_en ALMENAR PUERTA_NORTE PUERTA_SUR CAMPOS_DE_CULTIVO CAMINO,
+	nombre 'montana' 'montanas' 'paisaje',
+	descripcion "De las lejanas montañas casi no se aprecia ningún detalle."
+has femenino nombreplural;
+
+CasaMadera CABANA "Cabaña"
+with
+	descripcion " El ambiente de la cabaña es casi lúgubre, y muy húmedo.
+	             Dos de las cuatro paredes están cubiertas de estanterías,
+	             mientras que las otras dos se dividen entre una pequeña zona de estar y una cocina.
+	             Bastones, estantes con hierbas y varios frascos están distribuidos
+	             por todo el lugar. Un anciano, sentado en su mecedora, te mira con interés.",
+	afuera CLARO_DEL_BOSQUE,
+	al_s CLARO_DEL_BOSQUE
+;
+
+ObjetoEstatico cabanaFalsa "cabaña" CABANA
+with
+    nombre 'cabana' 'casa',
+    antes [;
+        examinar: << mirar >>;
+        default: "No conseguirás nada así.";
+    ]
+;
+
+Calle CALLE_AL_ESTE_DE_LA_PLAZA "Calle al este de la plaza"
+with
+	descripcion " Esta calle es el extremo del pueblo amurallado.
+	              En esta zona es donde suelen vivir los campesinos.
+	              Sabes que la concurrida plaza se encuentra al oeste, mientras
+	              que al norte hay más calles.",
+	al_n CALLE_AL_NORESTE_DE_LA_PLAZA,
+	al_o PLAZA_DEL_CASTILLO,
+	no_puedes_ir "La calle discurre de oeste a norte mediante una suave curva.
+	              Al oeste, se encuentra la plaza principal, la del castillo,
+	              mientras que al norte conecta con otra calle con un pequeño
+	              cruce.",
+;
+
+ObjetoEstatico puebloWestmorlandFalso "pueblo" CALLE_AL_ESTE_DE_LA_PLAZA
+with
+    esta_en CALLE_AL_ESTE_DE_LA_PLAZA CALLE_AL_NORESTE_DE_LA_PLAZA,
+    nombre 'pueblo' 'villa' 'calle' 'calles' 'callejones' 'callejon',
+    descripcion
+        "Las calles del pueblo son irregulares y estrechas.",
+    antes [;
+        examinar: rfalse;
+        default: "Me temo que nada bueno se obtendría así.";
+    ]
+;
+
+Calle CALLE_AL_NORESTE_DE_LA_PLAZA "Calle al noreste de la plaza"
+with
+	descripcion " En esta calle se encuentra tu casa, en la que podrías entrar.
+	              Hacia el norte, se asienta una de las puertas de la villa, así
+	              como una calle parte hacia el sur.
+	              Hacia el este puedes ver la muralla del pueblo.",
+	al_n PUERTA_NORTE,
+	al_s CALLE_AL_ESTE_DE_LA_PLAZA,
+	al_so PLAZA_DEL_CASTILLO,
+	adentro CASA_DE_ULFIUS,
+          no_puedes_ir "Al norte la calle muere en una de las puertas de la villa,
+                        mientras al sur entronca con una calle que realiza un suave
+                        giro hacia el norte. Puedes entrar en tu casa."
+;
+
+Laberinto CALLEJON "Callejón"
+with
+	descripcion " Un callejón sin salida sólo te permite ir hacia el este. Lo cierto es que no puedes garantizar que éste sea el este, estás ya muy desorientado.",
+	al_e CRUCE_EN_EL_LABERINTO_1,
+;
+
+Laberinto CALLEJON_2 "Callejón"
+with
+	descripcion [;
+		print " Un callejón que sólo permite la salida hacia el sur.
+		       Si es que es el sur, claro, pues a estas alturas estás ya muy desorientado";
+
+		if ( hiedraCallejon2.estaCortado() ) {
+			print ". Hacia el norte, podrías pasar por un hueco entre las hiedras";
+		}
+
+		".^";
+	],
+	al_n [;
+		if ( hiedraCallejon2.estaCortado() )
+		{
+			print "^...pasas a través de la hiedra...^";
+			jugadorA( CALLEJON_DE_LA_PUERTA, 2 );
+			rtrue;
+		}
+		"No puedes ir por ahí.";
+	],
+	al_s CRUCE_EN_EL_LABERINTO_2,
+;
+
+Laberinto CALLEJON_DE_LA_FUENTE "Callejón de la fuente"
+class Habitacion
+with
+	descripcion [;
+		print " Al final del corredor, observas una fuente con agua.
+		  El laberinto es igual de desolado aquí que en el resto de las estancias."
+		;
+
+		if ( PUERTA_CALLEJON_FUENTE hasnt oculto ) {
+			print " Hacia el norte ves una puerta.";
+		}
+
+		"^";
+	],
+	al_o CALLEJON_DE_LA_PUERTA,
+	al_n PUERTA_CALLEJON_FUENTE,
+;
+
+! [Si abres esta puerta, te verás devuelto a la primera intersección]
+
+Laberinto CALLEJON_DE_LA_PUERTA "Callejón de la puerta"
+with
+	descripcion " El callejón se extiende hacia el norte, con una enorme puerta,
+				 que altera el aspecto de este monótono laberinto, como final.
+	              La única salida alternativa se abre al este.",
+	al_s [;
+		print "^...pasas a través de la hiedra...^";
+		jugadorA( CALLEJON_2, 2 );
+		rtrue;
+	],
+	al_e CALLEJON_DE_LA_FUENTE,
+;
+
+Monte CAMINO "Camino"
+with
+	descripcion " El camino ancho y cómodo lleva hacia el bosque, al norte. Al sur, puedes ver, cercana, la villa. Estás solo en este camino, que viene de la entrada del bosque, de donde la gente suele contar extraños (y escalofriantes) cuentos.",
+	al_n ENTRADA_DEL_BOSQUE,
+	al_s PUERTA_NORTE,
+;
+
+Monte CAMINO_NORESTE "Camino Noreste"
+with
+	descripcion " El camino se interna en el bosque húmedo, hacia el norte, mientras hacia el suroeste parece abrirse en un claro. La maleza es húmeda, y hace frío aquí. Los árboles, robles todos ellos, apenas dejan pasar la luz.",
+	al_n CONTINUACION_DEL_CAMINO,
+	al_so ENTRADA_DEL_BOSQUE,
+
+;
+
+Monte CAMINO_NOROESTE "Camino Noroeste"
+with
+	descripcion " El camino se interna en el denso bosque hacia el norte, mientras aparentemente sale hacia alguna parte al sureste.",
+	al_n [;
+		caballeroNegro.ponVieneDeLoc( self );
+		jugadorA( POZO, 2 );
+		rtrue;
+	],
+	al_se ENTRADA_DEL_BOSQUE,
+
+;
+
+Monte CAMINO_NORTE "Camino Norte"
+with
+	descripcion [;
+	    print " El camino se presenta tranquilo. Todo está muy calmo.
+	            Tal vez las historias del bosque que escuchaste
+	            fueron sólo obras de algún Caballero fabulador.";
+	    if ( ~~( jugador.fueMerlinEncontrado	    () ) ) {
+	        print "^Avanzas esperanzado de encontrar lo antes posible a Merlín.";
+	    }
+
+	    "^";
+	],
+	al_n CIENAGA,
+	al_s ENTRADA_DEL_BOSQUE,
+
+;
+
+MontePedregoso CAMINO_DE_LAS_MONTANAS "Camino de las montañas"
+with
+	descripcion " Tomas el camino, que al poco se torna en pedregoso. La tierra es amarilla aquí y los árboles abandonan poco a poco la escena. El camino asciende hacia las montañas, al norte, mientras al sur, en el valle, puedes ver la taberna.",
+	eliminarNochePendiente [;
+		PararReloj( self );
+	],
+	al_n [;
+		ArrancarReloj( CAMINO_ENTRE_DESFILADEROS, 20 );
+		jugadorA( CAMINO_ENTRE_DESFILADEROS, 2 );
+
+		print "^El sol cae lentamente,
+	              mientras las primeras estrellas comienzan a dejar ver
+	              su brillo, anunciando
+	              que la noche no llegará mucho más tarde.^";
+
+		rtrue;
+	],
+	al_s TABERNA
+;
+
+ObjetoEstatico tabernaLejanaFalsa "taberna" camino_de_las_montanas
+with
+    esta_en camino_de_las_montanas camino_entre_desfiladeros,
+    nombre 'taberna' 'valle' 'westmorland' 'pueblo' 'villa' 'aldea' 'poblacion',
+    descripcion
+        "Enclaustrada en el valle al sur, la taberna se ve como una mota marrón
+         en una inmensidad verde. En el horizonte, casi adivinas Westmorland.
+         Al sureste, distingues otra pequeña aldea que desconoces.",
+    antes[;
+        examinar: rfalse;
+        default: "Extraña decisión... si bien imposible.";
+    ]
+;
+
+ObjetoEstatico montanasFalsas "montañas"
+with
+    esta_en CAMINO_DE_LAS_MONTANAS TABERNA CAMINO_A_SAJONES1
+            CAMINO_A_SAJONES2 ABISMO CAMINO_DE_LAS_MONTANAS
+            CAMINO_ENTRE_DESFILADEROS PLATAFORMA_ARRIBA CUMBRE ATALAYA
+            PIE_DE_LA_MONTANA,
+    nombre_m 'paisaje',
+    nombre_f 'montana' 'sierra',
+    nombre_fp 'montanas',
+    genero G_FEMENINO + G_PLURAL,
+    descripcion "Próximas; altas y frías, se te antojan como enormes guardianes.",
+    antes [;
+        examinar: rfalse;
+        default: "No conseguirás nada así. De verda, de verdad que no.";
+    ]
+has femenino;
+
+ObjetoEstatico arboles_camino_montanas "árboles" CAMINO_DE_LAS_MONTANAS
+private
+	primeraVezSeta true,
+with
+	genero G_MASCULINO + G_PLURAL,
+	nombre_mp 'arboles',
+	nombre_m 'arbol',
+	descripcion [;
+	    print "Los árboles, aunque ya escasos, dan buena sombra";
+
+		if ( seta in parent( self )
+		  && seta has oculto )
+		{
+			give seta ~oculto;
+			if ( self.primeraVezSeta ) {
+				 print " y... debajo de uno de ellos, hay una seta... que jurarías
+			 		   no haber visto antes";
+			 	 self.primeraVezSeta = false;
+			}
+			else print " y... debajo de uno de ellos hay más setas (que asegurarías
+			            que no estaban allí antes...), una es (o eso
+			            jurarías), exactamente igual a la anterior";
+		}
+
+		".^";
+	]
+has nombreplural;
+
+! [Desde aquí hasta entrar en la cueva, tienes un número de turnos restringido]
+
+MontePedregoso CAMINO_ENTRE_DESFILADEROS "Camino entre desfiladeros"
+with
+	tiempo_restante 0,
+	tiempo_agotado [;
+		if ( localizacion == self
+		  || localizacion == CAMINO_DE_LAS_MONTANAS
+		  || localizacion == ABISMO
+		  || localizacion == TABERNA )
+		{
+			print "^^...cae la noche...^^";
+			print "Te apresuras a llegarte hasta la taberna";
+			wait( "...^" );
+			print "^Entras y le pides alojamiento al cantinero";
+			wait( "...^" );
+
+			jugadorA( INTERIOR_DE_LA_TABERNA, 2 );
+
+			jugador.decir( "¡Hola! ...me ha sorprendido la noche y..." );
+			cantinero.decir( "Quedaos esta noche si lo deseais." );
+
+			print "^Descansais como podéis durante la noche...^";
+			jugador.hacerPasarUnDia();
+
+			rtrue;
+		}
+	],
+	descripcion " De a poco avanzas por el camino
+	              que serpentea hacia las montañas.
+	              Continúa hacia el este,
+	              mientras que al sur desciende hacia el valle.
+	              El camino es rocoso, abierto por un lado,
+	              la escarpada pendiente por el otro.
+	             ",
+	al_s CAMINO_DE_LAS_MONTANAS,
+	al_e ABISMO,
+
+;
+
+Monte CAMPOS_DE_CULTIVO "Campos de cultivo"
+with
+	descripcion " Los campos de cultivo sustenta a los habitantes de la villa.
+	              Magníficos en tiempo de siembra,
+	              se extienden hacia el este y sur aparentemente sin fin. Pronto brotará el trigo.
+	              El suelo del camino es también de tierra blanda.",
+	al_n PUERTA_SUR,
+	no_puedes_ir "No hay nada que hacer por aquí. Sabes que tus objetivos se encuentran
+	              más hacia el norte.",
+;
+
+object tierra "tierra" CAMPOS_DE_CULTIVO
+with
+	nombre 'tierra' 'fresca',
+	descripcion [;
+		print "La tierra es fresca, recientemente removida...^";
+
+		if ( cuchillo in limbo ) {
+			move cuchillo to parent( self );
+			"Encuentras un pequeño cuchillo semienterrado en la tierra.";
+		}
+
+		rtrue;
+	],
+	reaccionar_antes [;
+	    excavar:
+	        	if ( cuchillo in limbo ) {
+        	        print "Te dispones a excavar, pero entonces te fijas en el suelo.^";
+	            <<examinar self>>;
+	         } else "El suelo es realmente blando, no es necesario cavar.";
+		examinar:
+			if ( uno == obj_abajo ) {
+				<<examinar self>>;
+			}
+	]
+has estatico oculto femenino;
+
+! [Viaje en carruaje. Narración. Merlín viaja con ellos.]
+
+LocalidadConLuz CARRUAJE "Carruaje"
+private
+	llegado false,
+with
+	descripcion [;
+		if ( ~~self.llegado ) {
+			arrancarReloj( self, 5 );
+			print "^Notas una gran desazón en tu interior. Realmente
+			       empiezas a tener dudas sobre la moralidad de esta
+			       misión. Quizás Merlín querrá ahora responder a tus
+			       preguntas.^";
+		}
+
+		"Los caballos tiran del lujoso carruaje.
+		 A tu lado, Merlín y Uther viajan silenciosos.
+		 Uther parece emocionado y apesadumbrado a la vez.
+		 Merlín te devuelve la mirada cuando te fijas en él,
+		 incluso cuando está aparentemente dormitando
+		 abre los ojos y posa su mirada en ti,
+		 con ese extraño brillo que siempre percibes.";
+	],
+	tiempo_restante 0,
+	tiempo_agotado [;
+		self.llegado = true;
+		print "^El carruaje se detiene.
+		       Habéis llegado por fin al objetivo: el castillo donde
+		       Lady Ingrain, ajena a todo, está supuestamente a salvo
+		       de Uther Pendragón.^Las tropas del Rey han puesto sitio
+		       al castillo, así que entrar no será fácil";
+		wait( "...^" );
+	],
+	bajar [;
+		if ( self.tiempo_restante == 0
+		  && self.llegado )
+		{
+			print "Os disponéis a bajar del carruaje, y Merlín
+			       y Uther os siguen";
+			wait( "...^" );
+			print "El carruaje se aleja rápidamente una vez habéis descendido...^";
+
+			move merlin to SUROESTE_DEL_CASTILLO;
+			move uther to SUROESTE_DEL_CASTILLO;
+			jugadorA( SUROESTE_DEL_CASTILLO, 2 );
+			jugador.ponMisionEnCornualles();
+
+			merlin.decir( "Mi señor, tomad esta poción. Cambiará vuestro
+			               aspecto para que parezcáis el mismísimo Duque
+			               de Cornualles, aunque por muy breve tiempo." );
+			print "^Merlín alarga un frasco hacia Uther...^";
+
+			merlin.decir( "Ulfius, debéis escoltar al Rey, sin que sufra daño
+			               alguno hasta los dormitorios de Lady Ingrain, en
+			               el interior del castillo. Al norte, econtraréis un
+			               embarcadero... aguardad hasta que llegue un
+			               hombre de mi confianza, que os proveerá de algunos
+			               objetos útiles en vuestra misión."
+			);
+
+			uther.decir( "Os sigo, Ulfius." );
+			rtrue;
+		}
+		else "¡El coche está en marcha!";
+	],
+	afuera [; return self.bajar(); ],
+	abajo [; return self.bajar(); ],
+	! Al principio, no se podrá salir, hasta que termine el viaje
+;
+
+ObjetoEstatico carruajeFalso "carruaje" CARRUAJE
+with
+    nombre 'carruaje' 'paisaje' 'vista' 'bancos' 'banco' 'ventana' 'ventanilla'
+           'ventanas' 'ventanillas' 'coche' 'carroza',
+    descripcion
+        "El carruaje es lujoso, formado por dos bancos enfrentados donde os sentáis
+         los pasajeros de este extraño viaje a inciera misión. Por las ventanas, pueds
+         ver pasar el paisaje rápidamente.",
+    antes [;
+        examinar: rfalse;
+        default: "No tendría utilidad práctica.";
+    ]
+;
+
+! [ aquí tiene que encontrar sus cosas, entre ellas, un par de armaduras, la de cuero y la de combate, más pesada. Será interesante programar una ciénaga en el bosque donde, si portas la armadura de combate, te hundas irremediablemente]
+CasaMadera CASA_DE_ULFIUS "Casa de Ulfius"
+with
+	descripcion " Tu casa es pequeña pero acogedora. No tiene varias estancias como las más modernas, pero es suficiente, sobre todo considerando el tiempo que realmente pasas en ella. ",
+	afuera CALLE_AL_NORESTE_DE_LA_PLAZA,
+	descansar [;
+		print "^Esperas descansar, acostado, aunque te cuesta dormir...^";
+		print "No puedes evitar cierto desasosiego cuando piensas en tu misión,
+		       en si tiene sentido, si merece la pena";
+
+		wait( "...^" );
+		jugador.hacerPasarUnDia();
+		wait( "...^" );
+		clearMainWindow();
+		<< mirar >>;
+	]
+;
+
+ObjetoEstatico casaPropiaFalsa "casa" CASA_DE_ULFIUS
+with
+    nombre 'casa' 'estancia' 'estancias' 'sala',
+    esta_en CASA_DE_ULFIUS TU_NUEVA_CASA,
+    descripcion [;
+        << mirar >>;
+    ],
+    antes [;
+        examinar: rfalse;
+        default: "No conseguirás nada así.";
+    ]
+;
+
+Objeto estanteria "estantería" CASA_DE_ULFIUS
+with
+	nombre 'estanteria' 'balda',
+	descripcion "Una estantería, un tanto polvorienta.",
+	antes [x;
+		coger:
+			if ( self has estatico ) {
+				"La estantería es sólida, aunque tirando de ella, se podría arrancar...";
+			}
+		tirar, empujar, arrancar:
+			print "^Empiezas a tirar de la estantería...^";
+
+			objectloop ( x ) {
+				if ( x in estanteria ) {
+					move x to CASA_DE_ULFIUS;
+					print (_El) x, " cae al suelo...^";
+				}
+			}
+
+			print "Después de algún esfuerzo, arrancas la estantería de la pared...^";
+
+			move self to jugador;
+			give self ~estatico;
+			give self ~soporte;
+			rtrue;
+	]
+has estatico soporte femenino;
+
+Objeto mesaCasaUlfius "mesa" CASA_DE_ULFIUS
+with
+	nombre 'mesa',
+	descripcion "Pues sí, una típica mesa de madera."
+has estatico soporte femenino;
+
+Objeto camaCasaUlfius "cama" CASA_DE_ULFIUS
+with
+	nombre 'cama',
+	descripcion "Pues sí, una típica cama de madera con lecho de paja.",
+	reaccionar_antes [;
+		dormir:
+		        return CASA_DE_ULFIUS.descansar();
+	]
+has estatico soporte femenino;
+
+! [Aquí estaría la ciénaga de la que hablabas, en caso de llevar puesta una armadura pesada]
+
+Monte CIENAGA "Ciénaga"
+private
+	primeraVezAtravesada true,
+with
+	atravesarCienaga [destino;
+		print "^No te queda más remedio que atravesar la ciénaga...^";
+		print "Cuando comienzas a atravesar la ciénaga,
+		       notas como tus pies se hunden más y más en el barro";
+		wait( "...^" );
+		print "Sigues hundiéndote, ya casi no avanzas";
+		wait( "^...^" );
+
+		if ( children( jugador ) < 2
+		  && ARMADURA_DE_ACERO notin jugador )
+		{
+			self.ponHaSidoAtravesada();
+			print "...afortunadamente, cruzas la ciénaga a salvo...^
+			       ¡Por muy poco!^";
+			jugadorA( destino, 2 );
+		}
+		else {
+			if ( self.noHaSidoAtravesada() ) {
+				print "Te das cuenta de que no vas a poder atravesarla,
+				       y retrocedes...^A salvo, de milagro...^";
+			}
+			else {
+				banderaFin = 1;
+				print "^...no vas a llegar... no vas a llegar...^
+				       ...no llegas.^"
+				;
+				wait( "...^" );
+				print "^Tu último pensamiento es para tu Rey y tu misión...^
+				       fallida.^"
+				;
+			}
+		}
+	],
+	noHaSidoAtravesada [;
+		return self.primeraVezAtravesada;
+	],
+	ponHaSidoAtravesada [;
+		self.primeraVezAtravesada = false;
+	],
+	descripcion " El camino permite avanzar de norte a sur, si bien
+	 			 se ve interrumpido repentinamente por una gran ciénaga en el extremo norte.
+	              Aunque la ciénaga es relativamente estrecha en cuanto a lo largo,
+	              no puedes ver su final ni a derecha ni a izquierda. ",
+	al_n [;
+		self.atravesarCienaga( CLARO_DEL_BOSQUE );
+		rtrue;
+	],
+	al_s CAMINO_NORTE
+;
+
+ObjetoEstatico laCienaga "ciénaga"
+with
+	nombre_f 'cienaga' 'laguna',
+	nombre_m 'lago' 'barro' 'agua',
+	nombre_fp 'aguas',
+	genero G_FEMENINO,
+	esta_en CIENAGA CLARO_DEL_BOSQUE,
+	descripcion "La ciénaga se vé embarrada y, al menos en las orillas, poco profunda.
+			Parece que se podría cruzar allí donde interrumpe el camino.",
+	antes [;
+		beber: "...no seas guarro...";
+	],
+	reaccionar_antes [;
+		saltar, saltarSobre, meterse:
+			"En lugar de dar inútiles botes, y otras maniobras extrañas,
+			quizás deberías probar a dirigirte tranquilamente hacia
+			el norte.";
+		ponerSobre, lanzar:
+			if ( uno == estanteria
+			  && otro == self )
+			{
+				move estanteria to limbo;
+				"Colocas la estantería atravesando la ciénaga, pero
+				no es lo suficientemente
+				larga. El tablón se hunde lentamente en la burbujeante ciénaga,
+				hasta que ya
+				 no queda nada de ella a la vista. Perdida está...";
+			}
+			else
+			if ( otro == self ) {
+				"No quiero perder ", (el) uno, "...";
+			}
+	]
+has femenino;
+
+Monte CLARO_DEL_BOSQUE "Claro del bosque"
+with
+	descripcion " El claro se abre justamente enfrente a una tosca,
+	              aunque fuerte, cabaña de madera.
+	              Unas pequeñas volutas de humo ascienden
+	              desde la chimenea hasta el cielo. Hacia el sur,
+	              parte un camino que resulta ser la única salida del claro.
+	              Desde aquí, es posible ver como el camino del sur se ve
+	              interrumpido por la ciénaga.",
+	al_s [;
+		CIENAGA.atravesarCienaga( CIENAGA );
+		rtrue;
+	],
+	adentro CABANA,
+	al_n CABANA
+;
+
+ObjetoEstatico claroBosqueCabana "claro del bosque" CLARO_DEL_BOSQUE
+with
+          genero G_MASCULINO,
+	nombre_m 'claro',
+	nombre_f 'apertura',
+	descripcion
+	    "En su centro hay una cabaña, y en uno de sus extremos, una ciénaga.",
+	antes [;
+		examinar: rfalse;
+		default: "Nada útil obtendrías de eso.";
+	]
+;
+
+ObjetoEstatico edificacionMadera "casa de madera"
+with
+	nombre 'casa' 'madera' 'cabana' 'chimenea' 'construccion',
+	esta_en TABERNA CLARO_DEL_BOSQUE,
+	descripcion "Está hecha de grandes y fuertes troncos de madera. Pese a que es un poco
+	             tosca, está claro que es fuerte y resistente. De la chimenea salen unas
+	             volutas de humo.",
+	antes [;
+		meterse: <<entrar>>;
+	]
+has femenino;
+
+! [Aquí podría funcionar "xyzzy" y tener una visión de Merlín]
+Monte COLINA "Colina"
+with
+	descripcion " El camino asciende hacia el noreste,
+	              donde el túnel arbóreo parece terminar en una mágica luz...
+	              allí los árboles se espacian, dejando claros entre ellos.
+	              En sentido contrario, desciende hacia el sur,
+	              donde los árboles parecen formar una bóveda sólo
+	              atravesada por tenues alfilerazgos de luz proyectados
+	              en el suelo. No es posible pasar por este lugar sin
+	              apreciar su mágica esencia."
+	,
+	al_s [;
+		caballeroNegro.ponVieneDeLoc( self );
+		jugadorA( POZO, 2 );
+		rtrue;
+	],
+	al_ne TABERNA,
+
+;
+
+! [Aquí estan los bandidos]
+
+Monte CONTINUACION_DEL_CAMINO "Continuación del camino"
+with
+	descripcion "  El camino sigue de sur a norte. La sensación de húmedad es cierta aquí. Los árboles comienzan a formar una tupida bóveda, mientras la luminosidad desciende. Escuchas ruidos entre los árboles... tal vez sea el viento.",
+	al_n LAGO,
+	al_s CAMINO_NORESTE,
+
+;
+
+Laberinto CRUCE_EN_EL_LABERINTO_1 "Cruce en el laberinto"
+with
+	descripcion " Aquí se entrecruzan varios caminos. Los altos muros permiten salidas al norte, este, oeste y sur.",
+	al_n CRUCE_EN_EL_LABERINTO_3,
+	al_s ENTRADA_AL_LABERINTO	,
+	al_e CRUCE_EN_EL_LABERINTO_1,
+	al_o CALLEJON,
+
+;
+
+Laberinto CRUCE_EN_EL_LABERINTO_2 "Cruce en el laberinto"
+with
+	descripcion " Aquí se entrecruzan varios caminos. Los altos muros permiten salidas al norte, este, oeste y sur.",
+	al_n CALLEJON_2,
+	al_s CRUCE_EN_EL_LABERINTO_1,
+	al_e CRUCE_EN_EL_LABERINTO_4,
+	al_o CALLEJON,
+
+;
+
+Laberinto CRUCE_EN_EL_LABERINTO_3 "Cruce en el laberinto"
+with
+	descripcion " Aquí se entrecruzan varios caminos. Los altos muros permiten salidas al norte, este, oeste y sur.",
+	al_n CALLEJON,
+	al_s CRUCE_EN_EL_LABERINTO_1,
+	al_e CRUCE_EN_EL_LABERINTO_4,
+	al_o CRUCE_EN_EL_LABERINTO_3,
+
+;
+
+Laberinto CRUCE_EN_EL_LABERINTO_4 "Cruce en el laberinto"
+with
+	descripcion " Aquí se entrecruzan varios caminos. Los altos muros permiten salidas al norte, este, oeste y sur.",
+	al_n CRUCE_EN_EL_LABERINTO_1,
+	al_s CRUCE_EN_EL_LABERINTO_3,
+	al_e CALLEJON,
+	al_o CRUCE_EN_EL_LABERINTO_2,
+
+;
+
+InteriorCueva CUEVA "Cueva"
+with
+	descripcion " Efectivamente es una cueva,
+				 un tanto pequeña y húmeda, pero suficiente
+				 como para albergarte y guarecerte. Parece continuar hacia el este.",
+	al_o ENTRADA_A_LA_CUEVA	,
+	al_e CUEVA_PROFUNDA,
+	afuera ENTRADA_A_LA_CUEVA,
+;
+
+InteriorCueva CUEVA_PROFUNDA "Cámara"
+with
+	descripcion " La pared desnuda de la cueva te envuelve. La cámara donde te encuentras es enorme,
+	              si bien no se puede destacar nada de ella.
+	              El suelo está igual de desnudo, de no ser por la ocasional huella de un antiguo excremento
+	              de murciélago. La apertura por la que entraste aquí se encuentra al oeste.
+	              Unos restos humanos reposan contra una de las paredes de la cueva.",
+	al_o CUEVA
+;
+
+ObjetoEstatico excrementos "excrementos" CUEVA
+with
+    esta_en CUEVA CUEVA_PROFUNDA,
+    genero G_MASCULINO + G_PLURAL,
+    nombre_m 'excremento' 'murcielago',
+    nombre_f 'caca',
+    nombre_mp 'excrementos' 'muercielagos',
+    nombre_fp 'cacas',
+    descripcion
+        "Asquerosa y pestilente caca de murcielago.",
+    antes [;
+        examinar: rfalse;
+        default: "¡No seas guarro, que es caca, déjala estar!";
+    ]
+;
+
+ObjetoEstatico esqueleto "esqueleto" CUEVA_PROFUNDA
+with
+	nombre_mp 'restos' 'humanos' 'humanoides',
+	nombre_m 'enano' 'maluva' 'esqueleto',
+	nombre_f 'hacha' 'arma',
+	nombre_fp 'hachas' 'armas',
+	genero G_MASCULINO + G_PLURAL,
+	descripcion "Los restos de un humano, si bien extremadamente cortos en cuanto a
+	             estatura, reposan contra una de las paredes de la cámara.
+	             A su lado, firmemente sujetas por las manos del esqueleto, reposan
+	             sendas hachas, herrumbosas por el paso del tiempo.",
+	antes [;
+	          probar, oler, tocar:
+	                  "¡Un poco de respeto por Maluva!";
+		coger, buscarEn, tirar, empujar, girar:
+			"Es... era... el enano Maluva. No puedes observar sus restos sino con
+			 veneración, y desde luego, no te atreves a profanarlos.";
+	]
+;
+
+! [De noche, la salida al norte no se verá, de día sí]
+MontePedregoso ENTRADA_A_LA_CUEVA "Explanada en la roca"
+private
+	haDescansado false,
+	puedeSeguir false,
+with
+	resetYendo [;
+		self.puedeSeguir = false;
+		self.haDescansado = false;
+	],
+	resetViniendo [;
+		if ( jugador.fueMerlinEncontrado() )
+				self.puedeSeguir = false;
+		else		self.puedeSeguir = true;
+
+		self.haDescansado = true;
+	],
+	ponPuedeSeguir [;
+		self.puedeSeguir = true;
+	],
+	sePuedeSeguir [;
+		return self.puedeSeguir;
+	],
+	descripcion [;
+		print " El camino avanza sinuoso, rodeando esta nueva montaña.
+		  Siempre, a cada uno de tus lados, encuentras el abismo
+		  y la escarpada pared de roca.
+		  El camino parece finalizar, de nuevo abruptamente,
+		  en una pequeña explanada.
+		  Puedes ver, hacia el este, una abertura en la pared.";
+		if ( self.sePuedeSeguir() ) {
+			print " Una pequeña vereda serpentea hacia el norte...";
+		}
+
+		print "^";
+
+		if ( ~~self.haDescansado ) {
+			self.haDescansado = true;
+
+			print "^Ha caído la noche. Decides meterte en la cueva...^";
+			jugadorA( CUEVA, 2 );
+			print "El día termina de desvanecerse, gradualmente,
+			        entre las montañas,
+			        como el agua que se retira con la marea.
+			        Ya no se puede ver nada.^";
+			print "^Duermes profundamente, tratando de descansar después
+			       de todo lo que has pasado...^";
+			jugador.hacerPasarUnDia();
+
+			if ( ~~self.sePuedeSeguir() )
+			{
+				if ( bolla in jugador
+				  || bolsaDeComida in jugador )
+				{
+					print "^Te alimentas lo mejor que puedes...^";
+
+					if ( bolla in jugador ) {
+						move bolla to limbo;
+						print "...devoras la bolla de pan...^";
+					}
+
+					if ( bolsaDeComida in jugador ) {
+						lucrius.reset(); ! La comida vuelve a ser comprable
+						print "...comes la comida seca que traías...^";
+					}
+
+					self.puedeSeguir = true;
+					CAMINO_DE_LAS_MONTANAS					.eliminarNochePendiente();
+				}
+				else "^...no tienes nada que comer... es necesario
+				      que te avitualles...";
+			}
+		}
+	],
+	al_n [;
+		if ( self.sePuedeSeguir() ) {
+			if ( ~~jugador.fueMerlinEncontrado() )
+				print "^...reemprendes la marcha.^";
+			else 	print "^...vuelves hacia el laberinto.^";
+
+			jugadorA( PIE_DE_LA_MONTANA, 2 );
+			rtrue;
+		}
+		else "No es el momento de ir hacia las montañas, no estás preparado...";
+	],
+	al_s [;
+		print "^Cruzas dificultosamente por donde estaba el puente
+	  		    que entreviste con la ingestión de la seta...^";
+		jugadorA( ABISMO, 2 );
+		rtrue;
+	],
+	al_e CUEVA,
+	adentro CUEVA,
+has valepuntos;
+
+ObjetoEstatico explanadaRoca "explanada" ENTRADA_A_LA_CUEVA
+with
+    nombre 'explanada' 'superficie' 'abertura' 'entrada' 'cueva' 'gruta'
+           'camino' 'senda' 'vereda',
+    descripcion [;
+        print "Pues sí, una superficie más o menos llana de roca, que cubre el lugar donde
+         debiera estar el camino.
+         En uno de sus extremos puedes ver una abertura en la pared, pareciendo
+         la entrada de una cueva.";
+
+        if ( ENTRADA_A_LA_CUEVA.sePuedeSeguir() ) {
+            print " Una vereda parte hacia el norte.";
+        }
+
+        "^";
+    ],
+    antes [;
+        meterse: << ir obj_e >>;
+        examinar: rfalse;
+        default: "No llevaría a ningún resultado útil.";
+    ]
+;
+
+Laberinto ENTRADA_AL_LABERINTO "Entrada al laberinto"
+with
+	descripcion [;
+		ENTRADA_A_LA_CUEVA.resetViniendo();
+		" Ante ti un largo callejón de altos muros, te lleva hacia el norte.";
+	],
+	al_n CRUCE_EN_EL_LABERINTO_1,
+	al_s PIE_DE_LA_MONTANA,
+	afuera PIE_DE_LA_MONTANA,
+
+;
+
+ObjetoEstatico callejuelaLaberinto "callejón" ENTRADA_AL_LABERINTO
+with
+    esta_en ENTRADA_AL_LABERINTO CRUCE_EN_EL_LABERINTO_1 CRUCE_EN_EL_LABERINTO_2
+            CRUCE_EN_EL_LABERINTO_3 CRUCE_EN_EL_LABERINTO_4 CALLEJON
+            CALLEJON_DE_LA_FUENTE CALLEJON_DE_LA_PUERTA TUNEL,
+    nombre 'callejon' 'calle' 'callejuela' 'paso' 'camino' 'pasaje' 'corredor'
+           'estancia' 'laberinto' 'estancias' 'tunel',
+    descripcion
+        "Los pasajes se suceden en varias direcciones.",
+    antes [;
+        examinar: rfalse;
+        default: "No serviría de nada, me temo.";
+    ]
+;
+
+Monte ENTRADA_DEL_BOSQUE "Entrada del bosque"
+with
+	descripcion " La linde del bosque está aquí, luciendo una pasmosa frondosidad que contrasta
+				 con el cielo abierto del valle.
+	              El bosque parece aceptar a regañadientes el camino que hollas, el cual se interna
+	              en su espesura, proveniente del sur. Su extremo norte aparece, en realidad,
+	              dividido en tres nuevas sendas, hacia el norte, noreste y noroeste.",
+	al_n CAMINO_NORTE,
+	al_s CAMINO,
+	al_ne CAMINO_NORESTE,
+	al_no CAMINO_NOROESTE,
+
+;
+
+! [Aquí hay como diez objetos, inservibles excepto para mapear el laberinto]
+
+LocalidadConLuz ESPACIO_ENTRE_LOS_ARBUSTOS "Espacio entre los arbustos"
+with
+	descripcion " Un pequeño espacio entre los arbustos,
+	              apenas suficiente para poder mantenerse de pie.
+	              Es una casi coqueta bóveda vegetal, con una tenue luz
+	              de tonos verdes.",
+	salirDeAqui [;
+		print "^...sales a la luz del día a través de los arbustos cortados ...^";
+		jugadorA( PIE_DE_LA_MONTANA, 2 );
+		rtrue;
+	],
+	al_o [; return self.salirDeAqui(); ],
+	afuera [; return self.salirDeAqui(); ],
+;
+
+! [Añadamos un toque de humor: habrá un felpudito, y bajo él, la llave de la puerta]
+
+Habitacion EXPLANADA_DE_LA_ROCA "Explanada de la roca"
+with
+	descripcion " Una amplia explanada empedrada,
+	              tiene como centro la roca que se veía desde la
+	              entrada del laberinto, con una forma vaga de oso,
+	              grande y majestuoso.",
+	al_s TUNEL,
+	al_n PUERTA_EXPLANADA_DE_ROCA,
+has valepuntos;
+
+ObjetoEstatico explanadaFalsa "explanada" EXPLANADA_DE_LA_ROCA
+with
+    nombre 'explanada' 'superficie',
+    antes [;
+        examinar: << mirar >>;
+        default: "No solucionaría gran cosa.";
+    ]
+;
+
+Habitacion GUARIDA_DE_MERLIN "Guarida de Merlín"
+class InteriorCueva
+with
+	descripcion [;
+		ArrancarReloj( self, 3 );
+		" La guarida no es más que una cueva; sin embargo, algún tipo de luz cuyo origen desconoces parece brotar de las paredes, proveyendo de una agradable semi-penumbra. La puerta de acceso, a tu espalda, es la única posible salida, pues no hay otras estancias o escaleras. Puedes ver una mesa, un viejo sillón, una biblioteca con innumerables volúmenes, y finalmente una chimenea. Se antoja demasiado escueto, incluso para un druída.";
+	],
+	tiempo_restante 0,
+	tiempo_agotado [;
+		if ( ~~jugador.fueMerlinEncontrado() )
+		{
+			if ( localizacion ~= self ) {
+				return;
+			}
+
+			jugador.ponMerlinEncontrado();
+
+			print "Un sonido sordo y repentino atraen toda tu atención...^
+				Tras una pequeña nube de humo, que se disipa lentamente,
+				un anciano se encuentra delante de ti.^
+				Lleva una túnica, ajustada mediante un cinto, una sandalias,
+				y un bastón por toda vestimenta.
+				Su mirada denota inteligencia, y te mira entre divertido y curioso.^";
+			wait( "...^" );
+
+			Merlin.decir( "Veo que encontrasteis el camino." );
+
+			print "^...se adelanta, comentando muy relajado. Su mirada
+					se posa en ti, mientras crees ver un extraño brillo
+					en sus ojos.^";
+
+			jugador.decir( "Vos... sois... ¿Sois Merlín?" );
+
+			Merlin.decir( "Yo soy." );
+
+			Merlin.pasaANombrePropio();
+
+			print "^Sientes una intensa emoción y alivio... ¡por fin!^";
+
+			jugador.decir( "El rey Uther me envía,
+			                una gran pena reside en su alma, y..."
+			);
+
+			Merlin.decir( "Uther... claro que sí.
+			             Pero es conveniente que vengais a hablar
+			             conmigo en persona."
+			);
+
+			jugador.decir( "¿En persona?"	);
+
+			Merlin.decir( "Me encuentro ante vos sólo en espíritu.
+						  Mi verdadero hogar es el bosque cercano
+						  a la villa del rey. Una pequeña cabaña
+						  al norte de la entrada del bosque."
+			);
+
+			print "^Te sientes confuso...^";
+			jugador.decir( "Pero yo no os he encontrado allí..." );
+
+			Merlin.decir( "Me encontraréis, me encontraréis...
+			               esta vez me encontraréis.
+			               Acudid a mi y hablaremos."
+			);
+
+			print "^Merlín desaparece, dejando otra pequeña nube de humo tras
+			       de sí.^";
+			wait( "...^" );
+
+			Merlin.decir( "¡Ah...! Por favor, cerrad la puerta con llave
+			               cuando os vayais, y dejadla bajo el felpudo..."
+			);
+
+			if ( POCION_PARA_INVISIBLE notin jugador ) {
+				Merlin.decir( "...y tomad, un poco de poción verde..." );
+				move POCION_PARA_INVISIBLE to jugador;
+				Merlin.decir( "...es útil para combatir algún caballero
+				               que otro... pero eso vos ya lo sabéis..." );
+				print "Una poción verduzca aparece entre tus manos...
+				       ^Se oye una risa ahogada que reverbera en esta
+				        guarida...";
+				wait( "^" );
+				print "Después, todo queda en silencio...^";
+
+				rtrue;
+			}
+
+			jugador.ponMerlinEncontrado();
+		}
+	],
+	al_s PUERTA_EXPLANADA_DE_ROCA,
+has valepuntos;
+
+ObjetoEstatico sillonGuarida "sillón" GUARIDA_DE_MERLIN
+with
+	nombre 'sillon',
+	descripcion "Un viejo sillón.",
+	antes [;
+	    examinar: rfalse;
+	    meterse: "No es el momento de descansar, ahora.";
+	    default: "Deja el sillón tranquilo, no es importante.";
+	]
+;
+
+ObjetoEstatico guaridaFalsa "guardia" GUARIDA_DE_MERLIN
+with
+	nombre 'estancia' 'guarida' 'casa' 'sala' 'habitacion',
+	descripcion [;
+	    print "En semipenumbra. Húmeda. A ver...^";
+	    << mirar >>;
+	],
+	antes [;
+	    examinar: rfalse;
+	    default: "Incluso tú dudas de que hacer eso fuera útil.";
+	]
+;
+
+ObjetoEstatico librosGuarida "biblioteca" GUARIDA_DE_MERLIN
+with
+	nombre_mp 'libros' 'volúmenes',
+	nombre_f 'biblioteca' 'estanteria',
+	nombre_m 'libro',
+	descripcion "Multitud de volúmenes se agolpan en las estanterías de las paredes.",
+	genero G_FEMENINO,
+has femenino;
+
+CasaMadera INTERIOR_DE_LA_TABERNA "Interior de la Taberna"
+private
+	cerrada false,
+with
+	estaCerrada [;
+		return self.cerrada;
+	],
+	descripcion [;
+		print " El lugar no está demasiado animado; sólo
+	             el cantinero,
+	             detrás del mostrador
+	             (aparentemente muy ocupado en sus quehaceres)";
+
+	    if ( tristan notin limbo ) {
+	             print ", y un hombre muy joven con aspecto de haberse
+	             bebido todo el licor a la venta,
+	             apoyado en el otro extremo del mostrador";
+	    }
+
+	    ".";
+	],
+	afuera [;
+		if ( seta notin jugador
+		  && cantinero.fueMerlinComentado() )
+		{
+			print "^El cantinero se dirige a tí cuando te vas.";
+			cantinero.decir(
+				"Recordad, caballero, que quien a buen árbol se arrima..."
+			);
+		}
+
+		print "^Empujas la puerta de la taberna...^";
+		jugadorA( TABERNA, 2 );
+		rtrue;
+	]
+;
+
+ObjetoEstatico tabernaInteriorFalsa "taberna" interior_de_la_taberna
+with
+    nombre 'local' 'taberna' 'casa' 'sala' 'estancia',
+    descripcion [; << mirar >>; ],
+    antes [;
+        examinar: rfalse;
+        oler, probar, tocar: "No es que sea una pocilga, pero no es un alarde
+                              de limpieza aqueste lugar.";
+        default: "No creo, amable jugador, que tal cosa sirviera de mucho.";
+    ]
+;
+
+ObjetoEstatico mostrador "mostrador" INTERIOR_DE_LA_TABERNA
+with
+	nombre_m 'mostrador',
+	nombre_f 'barra',
+	genero G_MASCULINO,
+	descripcion [;
+		print "Una limpia, aunque ya gastada, barra.^";
+
+		if ( cantinero.objetoAVender == bolla ) {
+			print "En uno de los extremos, protegida por un pequeño mostrador, puedes ver
+			       una bolla de pan que debe estar a la venta.^";
+		}
+
+		if ( tristan.estaOfreciendoMapa() ) {
+			print "Sobre ella, puedes ver un pergamino, bien vigilado sin embargo, por ",
+					(el) tristan, "^";
+		}
+	]
+has transparente;
+
+ObjetoEstatico copas "copas" INTERIOR_DE_LA_TABERNA
+with
+	nombre_fp 'copas',
+	nombre_mp 'vasos',
+	genero G_FEMENINO + G_PLURAL,
+	descripcion "Sí, son copas."
+;
+
+! [aquí podría funcionar xyzzy, proporcionándote una vision de Merlín o algo]
+
+Monte LAGO "Lago"
+with
+	descripcion " El camino desemboca en una amplia zona sin árboles,
+	              donde puedes ver también un lago.
+	              A pesar de estar bastante alejados, sobre ti el cielo
+	              es casi indiscernible. El lago, al este,
+	              parece transformar el bosque en un pantano.
+	              La humedad es casi palpable aquí,
+	              mientras que la escasa luz que se filtra entre
+	              las hojas se refleja en la superficie del lago,
+	              y, a la vez, se ve proyectada en la bóveda arbórea.
+	              Es imposible pasar por aquí sin detenerse
+	              a apreciar tan mágico efecto. "
+	,
+	al_s CONTINUACION_DEL_CAMINO,
+	al_no TABERNA,
+
+;
+
+ObjetoEstatico elLago "lago" LAGO
+with
+	nombre_m 'lago' 'pantano',
+	nombre_f 'laguna' 'charca' 'agua',
+	nombre_fp 'aguas' 'pantanosas',
+	descripcion "El lago del lago no es transparente, sino que se vé llena de una miríada de
+	             partículas, que le confieren un tono verdoso. Sin embargo, el agua sugiere
+	             frescura.",
+	reaccionar_antes [;
+		nadar:
+			"Decir que sabes nadar sería decir mucho, aunque aprovechas para chapotear un poco
+			 y mojar los pies en el agua -lo cual relaja mucho-.";
+		entrar:
+			print "Te adentras un poco en el lago...^";
+			<<nadar>>;
+	],
+	antes [;
+		meterse:
+			print "Te adentras un poco en el lago...^";
+			<<nadar>>;
+		tocar:
+			"La temperatura del agua del lago es muy agradable... está casi tibia al tacto...";
+	]
+;
+
+! [Al intentar ir a otras salidas se le responde que no se puede deambular libremente por palacio]
+
+Palacio PASILLO_PRINCIPAL "Pasillo Principal"
+with
+	descripcion " El pasillo principal de palacio, cuyo arco principal, al norte,  permite acceder a la sala del trono, mientras al sur se encuentra el patio de armas.  Hay otras salidas al este, y al oeste. ",
+	al_n SALA_DEL_TRONO,
+	al_s PATIO_DE_ARMAS,
+!	al_s [;
+	!	banderafin = 2;
+		!"Fin de la demo^^Ésto es todo por ahora...
+	!	 si te has quedado con ganas de saber y jugar más, espera a la MedievoComp...^
+	!	 ^^
+	!	 El trono de Inglaterra... más de 20 personajes, más de 60 localidades.
+	!	 ^^";
+!	],
+	no_puedes_ir "No puedes deambular libremente por palacio. Sabes que el rey te castigaría si te sorprendieran."
+;
+
+ExteriorPalacio PATIO_DE_ARMAS "Patio de armas"
+with
+	descripcion " En el patio de armas se entrenan y forman los otros caballeros del rey, tus compañeros. Se puede salir del castillo por la puerta principal. También se puede acceder a las almenas por las escaleras para realizar vigilancia.",
+	al_n PASILLO_PRINCIPAL,
+	arriba ALMENAR,
+	afuera PLAZA_DEL_CASTILLO,
+	al_s PLAZA_DEL_CASTILLO,
+;
+
+ObjetoEstatico patioArmas "patio de armas" PATIO_DE_ARMAS
+with
+    nombre 'patio' 'armas',
+    descripcion
+        "El patio es una gran superficie que se extiende entre las murallas
+         y los arcos que conducen al exterior y al pasillo principal.",
+    antes [;
+        examinar: rfalse;
+        default: "No conseguirás nada así. De verdad.";
+    ]
+;
+
+ObjetoEstatico escaleras "escaleras" PATIO_DE_ARMAS
+with
+	nombre 'escaleras' 'piedra',
+	esta_en ALMENAR PATIO_DE_ARMAS,
+	descripcion "Las escaleras conducen hasta el almenar.",
+	antes [;
+		meterse:
+			if ( localizacion == PATIO_DE_ARMAS ) {
+				<<subir>>;
+			} else "¡No se puede subir más!";
+		bajar:
+			if ( localizacion == ALMENAR ) {
+				<<bajar>>;
+			} else "No se puede bajar más.";
+	]
+;
+
+ObjetoEstatico puertaPpalCastillo "puerta principal" PATIO_DE_ARMAS
+with
+    esta_en PATIO_DE_ARMAS PLAZA_DEL_CASTILLO,
+    nombre 'puerta' 'principal' 'arco' 'rastrillo' 'arcos',
+    descripcion "Un gran arco vacío con el rastrillo colgando en su parte superior,
+                 sin bajar, lo cuál siempre te recuerda por alguna razón a unas
+                 terribles fauces de algún tipo.",
+    antes [;
+        examinar: rfalse;
+        default: "El rastrillo y el arco principal son demasiado grandes.";
+    ]
+;
+
+MontePedregoso PIE_DE_LA_MONTANA "Pie de la montaña"
+with
+	descripcion [;
+		print " Estás al pie de la montaña... a lo lejos observas una enorme roca.
+	     La montaña no es ya abrupta, puedes apreciar algo de maleza por aquí.
+	     Justo delante de ti, ves un muro y una entrada en el mismo, cuyo dintel
+	     exhibe una extraña figura. "
+	    ;
+
+	    if ( arbustosEntradaLaberinto.estaCortado() )
+	    		"Un hueco entre tupidos arbustos se sitúa al este.";
+	    else	"Hacia el este, puedes ver unos tupidos arbustos.";
+	],
+	al_e [;
+		if ( arbustosEntradaLaberinto.estaCortado() ) {
+		     print "^...pasas a través de los arbustos cortados...^";
+			jugadorA( ESPACIO_ENTRE_LOS_ARBUSTOS, 2 );
+			rtrue;
+		}
+		<<examinar arbustosEntradaLaberinto>>;
+	],
+	adentro ENTRADA_AL_LABERINTO,
+	al_n ENTRADA_AL_LABERINTO,
+	al_s ENTRADA_A_LA_CUEVA
+;
+
+ObjetoEstatico rocaOso "roca" PIE_DE_LA_MONTANA
+with
+	nombre 'roca',
+	descripcion "Es increíble, pero... ¡Jurarías que tiene forma de oso!",
+	antes [;
+		probar, tocar, oler:
+			"Está demasiado lejos.";
+	]
+has femenino;
+
+ExteriorPalacio PLAZA_DEL_CASTILLO "Plaza del castillo"
+with
+	descripcion " La villa bulle de actividad. El rastrillo del castillo desemboca en una amplísima plaza, donde se sitúa siempre el mercado.  Desde aquí parten calles hacia el noreste, este y el sur ... en el resto de direcciones la muralla del pueblo bloquea el paso.",
+	al_s PUERTA_SUR,
+	al_e CALLE_AL_ESTE_DE_LA_PLAZA,
+	al_ne CALLE_AL_NORESTE_DE_LA_PLAZA,
+	al_n PATIO_DE_ARMAS,
+	adentro PATIO_DE_ARMAS,
+;
+
+ObjetoEstatico plaza "plaza" PLAZA_DEL_CASTILLO
+with
+	nombre_f 'plaza',
+	nombre_m 'pueblo' 'calle',
+	nombre_fp 'calles',
+	genero G_FEMENINO,
+	descripcion "La plaza del castillo casi siempre está concurridisima, ya que es el lugar
+	  			donde se organiza el mercado, y el centro neurálgico del pueblo, al partir de ella
+	  			varias calles que lo estructuran."
+;
+
+
+! [Transitas atentamente... hasta que te encuentras con el caballero negro]
+
+Monte POZO "Pozo"
+with
+	descripcion " El camino se abre tímidamente en una pequeña pradera.
+			Sin embargo, no parece haber ninguna vivienda por aquí,
+			aunque sí hay, curiosamente, un pozo.
+			Junto al pozo, en un pequeño charco formado por una fuente,
+			pace tranquilamente un caballo.
+			Un caballero está de pie junto al caballo.
+	",
+	al_n COLINA,
+	al_s CAMINO_NOROESTE,
+;
+
+ObjetoEstatico pradera "pradera" POZO
+with
+	esta_en POZO TABERNA,
+	nombre_f 'pradera' 'hierba',
+	nombre_m 'prado' 'claro' 'pasto' 'campo',
+	genero G_FEMENINO,
+	descripcion "La pradera se extiende hasta el límite del bosque, que la rodea."
+;
+
+Calle PUERTA_NORTE "Puerta norte"
+with
+	descripcion " La puerta norte de la villa. Puedes ver los muros del castillo hacia el sur, sabes que rodeándolo se llega al mercado. Hacia el norte, vas al bosque.",
+	al_n CAMINO,
+	al_s CALLE_AL_NORESTE_DE_LA_PLAZA,
+          no_puedes_ir "La puerta de la villa separa las calles al sur del camino hacia
+                        el bosque, al norte."
+;
+
+Calle PUERTA_SUR "Puerta sur"
+with
+	descripcion " Esta vía abandona el pueblo hacia el sur. Sin embargo, no te interesa ir en esa dirección, puesto que sabes que Merlín vive en el bosque situado al norte.",
+	al_n PLAZA_DEL_CASTILLO,
+	al_s CAMPOS_DE_CULTIVO,
+          no_puedes_ir "La puerta de la villa separa los labradíos, al sur, de las casas
+                        intramuros, al norte."
+;
+
+Palacio SALA_DEL_TRONO "Sala del Trono"
+with
+	descripcion " La sala del trono es abrumadoramente espaciosa. El trono se sitúa en  el  centro de la pared norte, mientras las paredes laterales se cubren con ricos tapices rememorando antiguas batallas ganadas por el rey. En el suelo, una alfombra roja conduce hasta el rey (si bien nadie se atrevería a llegar hasta él), y a los lados se sitúan los cortesanos. Delante de ti, se encuentra el rey Uther. Estás aquí por requerimiento suyo.",
+	al_s PASILLO_PRINCIPAL,
+	afuera PASILLO_PRINCIPAL,
+	no_puedes_ir "La única forma de salir es encaminarse hacia el sur."
+;
+
+ObjetoEstatico decoradoSalaTrono "decorado" SALA_DEL_TRONO
+with
+	nombre 'tapices' 'alfombra' 'tapiz' 'alfombras' 'trono' 'adornos' 'adorno',
+	descripcion
+		"Ricos adornos cubren la sala. El Rey se sienta sobre un trono dorado, mientras que las paredes
+		 se subren con tapices de batallas contra los sajones. Una gran alfombra cubre todo el
+		 suelo de la estancia."
+;
+
+Monte CAMINO_A_SAJONES1 "Camino"
+with
+	descripcion "Este transitado camino gira en una amplia curva de este a
+	             suroeste, serpenteando entre las faldas de las montañas.
+	             Pareciera como si por aquí transitaran grandes
+	             carromatos. Quizás al final del camino se encuentre un
+	             importante centro de mercadeo.",
+	al_so TABERNA,
+	al_e CAMINO_A_SAJONES2
+;
+
+Monte CAMINO_A_SAJONES2 "Camino"
+with
+	descripcion "La senda corre de este a oeste. Hacia el este, puedes ver
+	             en lontananza, una pequeña aldea.
+	             Aunque las montañas están cercanas, el terreno es llano aquí,
+	             y puedes ver campos cultivados todo a tu alrededor.",
+	al_o CAMINO_A_SAJONES1,
+	al_e [;
+		arrancarReloj( sajones, 5 );
+		jugadorA( ALDEA_SAJONES, 2 );
+		rtrue;
+	]
+;
+
+ObjetoEstatico aldeaFalsa "aldea" CAMINO_A_SAJONES2
+with
+          nombre 'pueblo' 'villa' 'poblacion' 'poblado' 'aldea',
+          descripcion "Una pequeña villa enclaustrada entre montañas, al este.",
+          antes [;
+              examinar: rfalse;
+              default: "No pareciera que aquesto pudiera ser útil.";
+          ]
+;
+
+ObjetoEstatico campos "campos cultivados" CAMINO_A_SAJONES2
+with
+          esta_en CAMINO_A_SAJONES2 CAMPOS_DE_CULTIVO,
+	nombre 'campos' 'cultivados' 'cultivo' 'cultivos',
+	descripcion
+		"Los ves por doquiera que mires, con diferentes tonos de verde
+		 según el tipo de cereal o legumbre plantado en ellos."
+has nombreplural;
+
+Calle ALDEA_SAJONES "Aldea"
+with
+	al_o [;
+		pararReloj( sajones );
+		jugadorA( CAMINO_A_SAJONES2, 2 );
+		rtrue;
+	],
+	descripcion
+		"Una gran plaza sirve de vía de comunicación entre algunas
+	             pequeñas casas. La plaza bulle de actividad, con numerosos
+	             clientes del mercadillo de turno."
+;
+
+ObjetoEstatico mercadillo "mercadillo" ALDEA_SAJONES
+with
+	nombre_m 'mercado' 'mercadillo' 'ropaje' 'calle' 'callejon',
+	nombre_mp 'calles' 'callejones' 'puestos' 'vestidos' 'ropajes',
+	nombre_f 'ropa' 'plaza',
+	genero G_MASCULINO,
+	descripcion
+		"En la plaza del pueblo, donde confluyen las dos o tres escasas
+		calles que lo forman, se organiza el mercadillo.
+		Todo lo que se vende en este mercadillo resultan ser artículos
+		de vestir, lo cual no te interesa demasiado."
+;
+
+respondeUnaVez descSajones
+private
+	elementos
+		"Una multitud de clientes del mercadillo se arremolina alrededor
+		 de los puestos. Cuando los miras con detenimiento, te das
+		 cuenta de que se trata de sajones."
+		"La multitud parece muy entretenida con el mercadillo, aunque de
+		 vez en cuando cazas alguna mirada furtiva hacia ti."
+		"Los sajones empiezan a revolverse, inquietos. Multitud de caras
+		 miran haca ti, más pendientes de tu persona que de las viandas en
+		 los puestos."
+;
+
+Gente sajones "sajones" ALDEA_SAJONES
+class ObjetoEstatico
+with
+	tiempo_restante 5,
+	tiempo_agotado [;
+		if ( ~~jugador.esInvisible() ) {
+		  if ( localizacion == parent( self ) )
+		  {
+			banderafin = 1;
+
+			"Los sajones te rodean. Se han dado cuenta de que eres un
+		 	 britano. No hay escapatoria.";
+		  }
+		} else {
+				arrancarReloj( self, 5 );
+				"Un grupo de sajones armados y organizados aparecen entre la multitud...
+		        sin duda, iban a por ti, pero ahora son incapaces de verte. Pese a su confusión,
+		        no cabe duda de que irán a por ti en cuanto a te localicen.^
+		        Parece incluso como si ya estuvieran advertidos de la posibilidad de tu llegada...";
+		}
+	],
+	nombre_mp 'sajones' 'clientes',
+	genero G_MASCULINO + G_PLURAL,
+	descripcion [;
+		print (string) descSajones.dev_msg(), "^";
+	],
+	antes [;
+		escuchar: "Escuchas retazos de cortas conversaciones en las que
+		           interviene la palabra ~britano~.";
+	],
+	reaccionar_antes [;
+		escuchar:
+			if ( uno == Nothing ) {
+				<<escuchar self>>;
+			}
+	],
+;
+
+Monte TABERNA "Taberna"
+with
+	descripcion " En medio de la pradera, puedes ver un taberna.
+				La gran casa se ve reconfortada por los rayos del sol,
+				que debe calentarla agradablemente entre
+				tanta humedad del bosque.
+				De la pradera parten muchos caminos: de entre ellos,
+				dos, el sureste y suroeste, se internan en el bosque,
+				mientras que al norte parte un camino que lleva
+				hacia las montañas. Un camino muy transitado al noreste
+				llama tu atención.",
+	al_n CAMINO_DE_LAS_MONTANAS	,
+	al_so COLINA,
+	al_se LAGO,
+	al_ne CAMINO_A_SAJONES1,
+	adentro [;
+		if ( ~~INTERIOR_DE_LA_TABERNA.estaCerrada() ) {
+			print "^Abres la puerta sin dificultad y
+			       entras en el interior de la taberna...^";
+			jugadorA( INTERIOR_DE_LA_TABERNA, 2 );
+		}
+		else print "^En este momento, la taberna está cerrada...^";
+
+		rtrue;
+	],
+	no_puedes_ir "Ese camino no te interesa para tu misión."
+;
+
+ObjetoEstatico tabernaFalsa "taberna" TABERNA
+with
+	nombre_f 'taberna',
+	nombre_m 'establecimiento',
+	genero G_FEMENINO,
+	antes [;
+		examinar: <<examinar edificacionMadera>>;
+		meterse: <<entrar>>;
+	]
+;
+
+
+
+Habitacion TUNEL "Túnel"
+class InteriorCueva
+with
+	descripcion " Ésto tiene más aspecto de ser una cueva alargada, un tosco túnel que contrasta con la suave perfección del laberinto. Tus pasos hacen eco en el lugar... ves una luz al final del túnel, hacia el norte, y también hay claridad hacia el sur.",
+	al_n EXPLANADA_DE_LA_ROCA,
+	al_s PUERTA_CALLEJON_FUENTE,
+;
+
+! Localidades del castillo de Cornualles --------------------
+
+Include ">tronoCornualles.inf";
+
+! ================= OBJETOS ===============
+
+
+ObjetoEstatico AGUA "fuente" CALLEJON_DE_LA_FUENTE
+with
+	nombre_f 'agua' 'fuente',
+	nombre_m 'estanque',
+	genero G_FEMENINO,
+	descripcion [;
+		if ( llave has oculto ) {
+			give llave ~oculto;
+			print "^Ves una curiosa llave brillando en el fondo del estanque.^";
+		}
+		"Es agua del estanque, cristalina, y fresca";
+	],
+	reaccionar_antes [;
+		ponerSobre:
+			"Meter cosas en el agua del estanque no parecería servir a ninguna finalidad.";
+	],
+	antes [;
+		beber:
+			"Sacias tu sed, y te sientes reconfortado.";
+	]
+has femenino;
+
+ObjetoCortable arbustosEntradaLaberinto "arbustos" PIE_DE_LA_MONTANA
+class ObjetoEstatico
+with
+	nombre 'arbustos',
+	adjetivos 'tupidos' 'tupido',
+	objetoCortante espada,
+	alCortar "...la pared de arbustos cortada deja entrever ahora un hueco
+	          por el que podrías pasar.",
+	descripcion_cortado "Los aún tupidos arbustos
+	                     dejan entrever ahora un hueco en el que
+	                     podrías pasar...",
+	descripcion_nocortado "Tupidos arbustos, que limitan con la muralla,
+	                       impiden el paso hacia el este."
+has nombreplural;
+
+Objeto ARENA "arena" ABISMO
+with
+	articulo "un poco de",
+	nombre 'arena',
+	descripcion "Fina arena.",
+	reaccionar_antes [;
+		examinar:
+			if ( uno == obj_abajo
+			  && localizacion == ABISMO )
+			{
+			  if ( arena in jugador )
+			  {
+				"Es arena como la que ya tienes...";
+			  }
+			  else
+			  if ( self has oculto ) {
+			    give self ~oculto;
+				"El suelo está lleno de arena que podrías coger en tus manos...";
+			  }
+			  else <<examinar self>>;
+			}
+	],
+	antes [;
+		tirar, dejar, lanzar, ponerA:
+			give arena oculto;
+			move self to ABISMO;
+
+			if ( localizacion == ABISMO )
+			{
+				"La arena se ve lanzada y esparcida en el aire
+				 por la acción del viento que sopla
+				 por el estrecho desfiladero.";
+			} else {
+				"La arena cae y se pierde, esparcida por el suelo...";
+			}
+	]
+has femenino oculto;
+
+Objeto ARMADURA_DE_ACERO "armadura de acero" estanteria
+with
+	nombre 'armadura' 'acero' 'combate',
+	descripcion "La armadura de combate es la utilizada a la hora de cargar a caballo o en torneos. Es muy resistente."
+has prenda femenino ;
+
+Objeto ARMADURA_DE_CUERO "armadura de cuero" estanteria
+with
+	nombre 'armadura' 'cuero',
+	descripcion "Tu armadura de cuero. No protege demasiado, pero por otra parte es mucho más manejable que la de combate.",
+	antes [;
+		vestir:
+			if ( self in jugador
+			  && self hasnt puesto )
+			{
+				if ( ARMADURA_DE_ACERO in jugador
+				  && ARMADURA_DE_ACERO has puesto )
+				{
+					print "^...te quitas ", (el) ARMADURA_DE_ACERO, " tan sólo un momento...^";
+				}
+			}
+	]
+has prenda femenino ;
+
+DejadoDesaparecido BOLSA "bolsa de dinero" limbo
+private
+	numMonedas NUM_MONEDAS_INICIALES
+with
+	fueRobada false,
+	nombre_m 'oro' 'dinero',
+	nombre_f 'bolsa' 'monedas',
+	genero G_FEMENINO,
+	msgPerdida [;
+			self.fueRobada = false;
+			"^Desafortunadamente, la bolsa del dinero ha desaparecido...
+			 ¿quién la habrá cogido?^
+			 ¿qué dirá el Rey Uther de todo ésto?";
+	],
+	descripcion [;
+		self.abrir();
+		print " le echas un vistazo... tienes ", self.getNumMonedas(), " monedas de oro ";
+		self.cerrar();
+		rtrue;
+	],
+	getNumMonedas [;
+		return self.numMonedas();
+	],
+	quitarMonedas [x;
+		self.abrir();
+		if ( x > self.getNumMonedas() )
+		{
+			x = self.getNumMonedas();
+		}
+		print " retiras ", x, " monedas.^";
+
+		self.numMonedas = self.numMonedas - x;
+		print "^Ahora te quedan ", self.numMonedas, " ";
+
+		self.cerrar();
+	],
+	insertarMonedas [x;
+		self.abrir();
+		print " introduces ", x, " monedas más.^";
+		self.numMonedas = self.numMonedas + x;
+		print "Ahora tienes ", self.getNumMonedas(),
+		      " monedas ";
+		self.cerrar();
+	],
+	resetMonedas [;
+		self.numMonedas = NUM_MONEDAS_INICIALES;
+	],
+	abrir [;
+		print "^Abres la bolsa... ";
+	],
+	cerrar [;
+		print " ...cierras la bolsa.^";
+	],
+	antes [;
+		contar:
+			<<examinar self>>;
+		abrir:
+			self.abrir();
+			print " pero como no tienes nada que hacer ahora mismo con ella ";
+			self.cerrar();
+			rtrue;
+		cerrar: "¡La bolsa ya está cerrada!";
+		vaciar: "No sería una buena idea tener las monedas bailando
+		         fuera de la bolsa.";
+		buscarEn: <<examinar self>>;
+	],
+	despues [;
+		dejar: self.lugarDondeLaDejaste = parent( self );
+	]
+has femenino ;
+
+ObjetoEstatico CABALLO "caballo" POZO
+with
+	nombre 'caballo',
+	descripcion "Es un caballo ataviado con armadura de combate.
+	             Toda su armadura es completamente negra.",
+	antes [;
+		examinar: rfalse;
+		default: "Mejor dejar al caballo tranquilo...";
+	],
+	vida [;
+		"El caballo resopla, como molesto.";
+	]
+has  animado;
+
+ObjetoEstatico CHIMENEA "chimenea"
+with
+	nombre_f 'chimenea' 'pota' 'caldero' 'agua' 'llama' 'cocina',
+	nombre_fp 'llamas',
+	nombre_m 'fuego',
+	genero G_FEMENINO,
+	esta_en COCINAS GUARIDA_DE_MERLIN CABANA,
+	descripcion "Un caldero se encuentra colgado sobre las llamas.
+	             En su interior, sólo agua tibia.",
+	antes [;
+		tocar: "El agua del caldero está tibia... las llamas están muy calientes...";
+		oler: "No huele a nada, sólo es agua en una pota...";
+		vaciar, tirar, girar, empujar: "No conseguirás nada así. De verdad.";
+	]
+has femenino ;
+
+ObjetoEstatico CLIENTES "clientes" PLAZA_DEL_CASTILLO
+class Gente
+with
+	nombre_mp 'clientes',
+	genero G_MASCULINO + G_PLURAL,
+	descripcion "La gente deambula por aquí y por allá esperando encontrar lo que necesitan."
+has;
+
+ObjetoEstatico COLGANTES "colgantes" ABISMO
+with
+	nombre 'colgantes',
+	descripcion "Son unos cables que parecen estar atados a agujeros hechos en la roca...sin embargo, las cables que parten de las ataduras están tensos y no colgando... como debiera ser, puesto que delante de ti no hay nada."
+has  nombreplural;
+
+ObjetoEstatico CORTESANOS "cortesanos" SALA_DEL_TRONO
+class Gente
+with
+	nombre_mp 'cortesanos',
+	genero G_MASCULINO + G_PLURAL,
+	conversacion [;
+		"¡No puedes dirigirte a otros delante del Rey!";
+	],
+	descripcion "Todos te miran con esperanza, quizás pensando que
+	             podrás traer a Merlín y por tanto solucionar
+	             el mal que aqueja al rey y está desangrando el reino."
+has;
+
+Objeto CUCHILLO "cuchillo" limbo
+with
+	nombre 'cuchillo',
+	descripcion "Es un pequeño cuchillo para cortar el trigo una vez llega el tiempo de cosechar."
+has  ;
+
+ObjetoEstatico ENTRADA "entrada" PIE_DE_LA_MONTANA
+with
+	nombre 'entrada' 'dintel' 'figura' 'extrana' 'serpiente',
+	descripcion "Una extraña serpiente, sin detalles como ojos o boca, figura tallada sobre el dintel de la entrada."
+has femenino ;
+
+Objeto ESPADA "espada" estanteria
+with
+	nombre 'espada',
+	descripcion "Es tu espada de combate de caballero. Un poco pesada, aunque es muy manejable a dos manos."
+has femenino ;
+
+Objeto figurita "figurita de artesanía" limbo
+with
+	nombre 'figurita' 'artesanía',
+	descripcion "Una bella figura realizada en barro cocido y pintada a mano."
+has femenino;
+
+ObjetoEstatico FRASCOS "frascos"
+with
+	esta_en GUARIDA_DE_MERLIN CABANA,
+	nombre 'frascos' 'objetos',
+	descripcion "Hay bastante de ellos, de distinto tamaño en cuyo interior resguarda liquidos de colores varios."
+	,antes [;
+		coger, empujar, tirar, girar, vaciar: "Déjalo... ¡que no es tuyo!";
+	]
+has  nombreplural;
+
+respondeUnaVez beberFuente
+private
+	elementos
+		"Tú veras, pero... mira que el caballo está bebiendo de ahí..."
+		"Sí señor muy fresca y agradable... con un regustillo a babas de caballo,
+		 pero bueno..."
+;
+
+ObjetoEstatico FUENTE "fuente" POZO
+with
+	nombre_f 'fuente',
+	nombre_m 'agua' 'charco',
+	genero G_FEMENINO,
+	descripcion "El agua cristalina que vierte en ella calmará la sed del caballo.
+	             Junto a la fuente, en el otro extremo...
+	             un hombre que por su vestimenta aparenta ser un caballero.",
+	antes [;
+	  beber:
+		print (string) beberFuente.dev_msg(), "^";
+		rtrue;
+	],
+	reaccionar_antes [;
+		lanzar, ponerSobre:
+			if ( uno == seta
+			  && otro == self )
+			{
+				print "^El caballero se da cuenta de tu acción...^";
+				caballeroNegro.decir( "¡Ah, felón...!¿pretendíais envenenarme?" );
+				<<atacar caballeroNegro>>;
+			}
+	]
+has  femenino;
+
+ObjetoEstatico POZO_ARTESANO "pozo" POZO
+with
+	nombre 'pozo',
+	descripcion
+		"El pozo no tiene casi ningún interés. Le faltan la cuerda y el cubo,
+		 por lo que es de mucha mejor utilidad la fuente natural a su lado.",
+	antes [;
+		buscarEn:
+			"Al fondo, puedes distinguir el tenue reflejo del agua. Cuando sacas la cabeza,
+			 aprecias que el caballero te mira fijamente mientras sacude la cabeza...";
+	]
+has;
+
+ObjetoEstatico HIERBAS "hierbas"
+with
+	esta_en CABANA GUARIDA_DE_MERLIN,
+	nombre 'hierbas',
+	descripcion "Sí, hierbas y huelen un poco fuertes.",
+	antes [;
+		coger, empujar, tirar, girar, vaciar: "Déjalo... ¡que no es tuyo!";
+	]
+has femenino nombreplural;
+
+Objeto LLAVE "llave de oro" CALLEJON_DE_LA_FUENTE
+with
+	nombre 'llave',
+	adjetivos 'oro',
+	descripcion [;
+		"Es una llave de oro,
+	     cuya forma en un extremo captura la figura de una serpiente.";
+	],
+	despues [;
+		coger:
+			if ( PUERTA_CALLEJON_FUENTE has oculto
+			  && localizacion == CALLEJON_DE_LA_FUENTE )
+			{
+				give PUERTA_CALLEJON_FUENTE ~oculto;
+				"En el momento de coger la llave,
+			 	se materializa una puerta al norte. Aunque quizás ya estaba ahí...^";
+			}
+	]
+has femenino oculto;
+
+Objeto LLAVE_PEQUENA "llave pequeña" limbo
+with
+	nombre 'llave' 'pequena',
+	descripcion "Es una pequeña llave, nada más.",
+	antes [;
+		meter, ponerSobre:
+			if ( otro == felpudo )
+			{
+				if ( self notin jugador ) {
+					"Pero si no tienes la llave...";
+				}
+
+				move self to felpudo;
+				print "Guardas cuidadosamente la llave bajo el felpudo...^";
+
+				if ( jugador.fueMerlinEncontrado()
+				  && PUERTA_EXPLANADA_DE_ROCA hasnt abierta )
+				{
+					print "^Repentinamente, te ves transportado por el aire,
+						   envuelto por unas fuerzas invisibles.^";
+					wait( "...^" );
+					print "Sobrevuelas de esta forma el laberinto, para ir a parar
+						   a su entrada";
+					wait( "...^" );
+					Conseguido( TAREA_LLAVE_MERLIN );
+					jugadorA( PIE_DE_LA_MONTANA, 2 );
+				}
+
+				rtrue;
+			}
+	]
+has femenino valepuntos;
+
+ObjetoEstatico MECEDORA "mecedora" CABANA
+with
+	nombre 'mecedora' 'silla',
+	antes [;
+		examinar: rfalse;
+		default:
+			if ( mirlo in parent( self ) )
+				"Mejor dejar en paz la silla al anciano, pobre hombre...";
+			else "Mejor dejarla, no sea que Merlín se enfade.";
+	],
+	descripcion [;
+		print "Es una vieja y decrépita mecedora, sin mayor interés.^";
+
+		if ( mirlo in parent( self ) ) {
+			print "El anciano se sienta sobre ella, haciéndola chirriar
+			       cada vez que se mueve, trabajosamente.^";
+		}
+		else
+		if ( merlin in parent( self ) ) {
+			print "Merlín se sienta sobre ella, moviéndola vigorosamente y haciéndola
+			       emitir chirridos que más parecieran quejidos o chillidos.^";
+		}
+
+		rtrue;
+	]
+has femenino;
+
+Objeto POCION_PARA_INVISIBLE "poción verde" limbo
+with
+	nombre 'pocion' 'pocima' 'brebaje' 'verde'
+	       'invisibilidad' 'botellita' 'frasco',
+	descripcion "Es una poción de un líquido verde.",
+	antes [;
+		abrir:
+			print "La abres, y ves que...^";
+			<<examinar>>;
+		beber:
+			move self to limbo;
+			jugador.hazInvisible();
+			"Te bebes la poción y notas un hormigueo extraño en todas las
+			 extremidades... momentos después, una energía extraña bulle
+			 desde tus entrañas a tu cabeza... entonces, ~normalidad~
+			 de nuevo.";
+	]
+has  femenino valepuntos;
+
+Objeto MAPA "mapa" limbo
+with
+	nombre 'mapa' 'pergamino',
+	descripcion "Contiene un dibujo de lo que parece ser un laberinto.
+				El mapa te indica seguir, desde la entrada,
+	             norte, norte, este, oeste, norte, norte.",
+	antes [;
+		robar:
+			if ( self notin jugador ) {
+				"¿Robar ", (el) uno, "...?¡Eres un caballero, por Dios!^
+			 	¡¿No querrás robarle a otro caballero!?";
+			}
+		coger, examinar, buscarEn, empujar, tirar:
+			if ( ~~tristan.fueMapaVendido() ) {
+				if ( ~~jugador.esInvisible() ) {
+					"Tristán te mira tristemente y aparta el mapa de tu alcance.";
+				} else {
+					print "Tristán asiste, atónito, a cómo el mapa desaparece de entre sus manos
+					       de manera repentina.^
+					       Rompe a llorar y sale de la cabaña corriendo, sin poder creer su mala
+					       suerte.^
+					       Injusto final para un caballero de su talla.^
+					       Injusta misión la encomendada.^";
+					PararDaemon( tristan );
+					move tristan to limbo;
+					rfalse;
+				}
+			}
+	],
+	despues [;
+		coger: Conseguido( TAREA_CONSEGUIR_MAPA );
+	]
+has valepuntos;
+
+DejadoDesaparecido BOLLA "bolla de pan" INTERIOR_DE_LA_TABERNA
+with
+	nombre_f 'bolla',
+	nombre_m 'pan',
+	genero G_FEMENINO,
+	msgPerdida "Los restos de la bolla de pan están esparcidos por el suelo,
+	            probablemente destruída por una alimaña, lo que queda de la
+	            bolla de pan ya no te sirve de nada.",
+	adjetivos 'grande',
+	descripcion "Una gran bolla de pan, de crujiente corteza y blanda
+	             miga en el interior.",
+	reaccionar_antes [;
+	    if ( self has oculto ) {
+	        if ( ( uno == self
+	            || otro == self )
+	          && accion ~= ##Examinar
+	          && accion ~= ##Comprar )
+	        {
+	            print "Primero deberás comprar ", (el) self, ".^";
+	            rtrue;
+	        }
+	    }
+	],
+	antes [;
+	          coger:
+	              if ( self has oculto ) {
+	                  "Puedes comprarlo, que no cogerlo directamente...";
+	              }
+		comer: "Aún no es el momento de comer...";
+	]
+has femenino comestible oculto;
+
+ObjetoEstatico MESA "mesa" GUARIDA_DE_MERLIN
+with
+	nombre 'mesa',
+	descripcion "De madera. Sobre ella frascos, hierbas, etc..."
+has femenino ;
+
+ObjetoEstatico MURO "muro" PIE_DE_LA_MONTANA
+with
+	nombre 'muro',
+	descripcion "Del mismo material que la muralla de la entrada."
+has  ;
+
+Objeto PEONZA "peonza" limbo
+with
+	nombre 'peonza',
+	descripcion "La peonza se puede lanzar para jugar con ella, si bien para eso te haría falta su pequeña cuerda."
+has femenino ;
+
+ConexionAbrible PUERTA_CALLEJON_FUENTE "puerta" CALLEJON_DE_LA_FUENTE
+class ObjetoEstatico
+with
+	nombre_f 'puerta' 'serpiente',
+	nombre_m 'dintel',
+	genero G_FEMENINO,
+	descripcion [;
+		if ( localizacion == CALLEJON_DE_LA_FUENTE )
+			"Alta... muy alta, casi como las murallas de este laberinto.
+	             Está construida de hierro y madera.
+	             En el dintel de la puerta, tallado en piedra,
+	             puedes ver una extraña figura...
+	             es una curiosa serpiente,
+	             sin marcas que puedan corresponderse con ojos o boca.";
+	    else "Al sur, está la puerta del callejón de la fuente.";
+	],
+	laLLave llave,
+	antes [;
+		abrir:
+			if ( llave in jugador ) {
+				give self abierta;
+				"Abres la puerta...";
+			} else "Está cerrada con llave...";
+	],
+	reaccionar_antes [;
+		entrar:
+			if ( localizacion == CALLEJON_DE_LA_FUENTE ) {
+				<<ir obj_n>>;
+			}
+		salir:
+			if ( localizacion == TUNEL ) {
+				<<ir obj_s>>;
+			}
+	]
+has oculto femenino;
+
+Objeto PUERTA_CALLEJON_PUERTA "puerta" CALLEJON_DE_LA_PUERTA
+with
+	nombre_f 'puerta' 'placa' 'lengua' 'serpiente',
+	genero G_FEMENINO,
+	nombre_m 'dintel' 'simbolo',
+	descripcion "Una alta puerta de hierro, en cuyo dintel ves una serpiente
+	             como las anteriores, con una detallada lengua bífida,
+	             tallada en una placa de hierro.",
+	antes [;
+		cerrar:
+			if ( llave in jugador )
+			{
+				give self ~abierta;
+				"Cierras la puerta...";
+			} else "Para eso necesitarías la llave...";
+		quitarcerrojo:
+			if ( otro ~= llave ) {
+				"No conseguirás abrirla así...";
+			}
+
+			<<abrir self>>;
+		abrir:
+			if ( llave in jugador ) {
+				give self abierta;
+				"Abres la puerta...";
+			} else "Está cerrada con llave...";
+	],
+           pasar [;
+        		if ( self hasnt abierta ) {
+        			"No puedes pasar a través de la puerta...";
+        		}
+
+		print "...te internas en una inquietante oscuridad";
+		wait( "...^" );
+		print "Repentinamente, pareces caer y caer sin fin";
+		wait( "...^" );
+		print "Vuelves en ti... estás en";
+		wait( "...^" );
+		jugadorA( ENTRADA_DEL_BOSQUE ,2 );
+		rtrue;
+	],
+	reaccionar_antes [;
+		ir: if ( uno == obj_n ) {
+				return self.pasar();
+		    }
+		entrar: <<ir obj_n>>;
+	]
+has estatico femenino ;
+
+ConexionAbrible PUERTA_EXPLANADA_DE_ROCA "puerta" EXPLANADA_DE_LA_ROCA
+class ObjetoEstatico
+with
+	nombre_f 'puerta' 'serpiente' 'entrada',
+	nombre_m 'dintel',
+	genero G_FEMENINO,
+	descripcion [;
+	    if ( localizacion == EXPLANADA_DE_LA_ROCA )
+		"Al norte se sitúa una sencilla puerta de madera, con una serpiente tallada en
+	             su dintel. Un pequeño felpudo reposa justo bajo ella.";
+	    else "Al sur, una puerta permite salir de esta especie de cueva.";
+	],
+	laLLave llave_pequena,
+	antes [;
+		quitarCerrojo:
+			if ( otro == llave_pequena ) {
+				<<abrir self>>;
+			}
+
+			"No conseguirás abrir la puerta con ", (el) otro, ".";
+		abrir:
+			if ( llave_pequena in jugador ) {
+				give self abierta;
+				"Abres la puerta...";
+			} else "Está cerrada con llave...";
+	],
+	reaccionar_antes [;
+		entrar:
+			if ( localizacion == EXPLANADA_DE_LA_ROCA ) {
+				<<ir obj_n>>;
+			}
+		salir:
+			if ( localizacion == GUARIDA_DE_MERLIN ) {
+				<<ir obj_s>>;
+			}
+	]
+has femenino;
+
+ObjetoEstatico MERCADO "mercado" PLAZA_DEL_CASTILLO
+with
+    nombre 'mercado' 'mercadillo' 'puestos',
+    descripcion [x;
+        print "^El mercado bulle de actividad, aunque con algo de dificultad
+                puedes ver "
+        ;
+        objectloop ( x in PLAZA_DEL_CASTILLO ) {
+            if ( x ofclass PuestoMercado ) {
+                print (El) x, ", ";
+            }
+        }
+        print "...y crees que ninguno más.^";
+    ]
+;
+
+PuestoMercado PUESTO_DE_FRUTA "puesto de comida" PLAZA_DEL_CASTILLO
+with
+	nombre 'puesto' 'comida',
+	descripcion [;
+		move lucrius to parent( self );
+
+		"En el puesto se venden bolsas donde hay varias piezas de frutos secos
+	             y otras tantas de carne que tiene pinta de estar muy muy seca,
+	             ideal para llevar a un largo viaje.^
+	     Alrededor del puesto, atendiendo a los clientes puedes ver a Lucrius,
+	     un viejo conocido del mercadillo.";
+	]
+has  ;
+
+PuestoMercado PUESTO_DE_ZAPATOS "puesto de zapatos" PLAZA_DEL_CASTILLO
+with
+	nombre 'puesto' 'zapatos',
+	descripcion "A la venta hay una amplia variedad de zapatos. Nada que te interese."
+has  ;
+
+PuestoMercado PUESTO_DE_ARTESANIA "puesto de artesanía" PLAZA_DEL_CASTILLO
+with
+	veces 0,
+	nombre 'puesto' 'artesania' 'artesanía' 'ceramica' 'figuras' 'figuritas',
+	descripcion [;
+				++self.veces;
+				move sulfius to parent( self );
+
+				print "Multitud de cuencos y figuras decorativos llenan el puesto.^";
+
+				if ( self.veces == 1 ) {
+					jugador.piensa( "Debería decorar mi casa... pero éste no es el momento, definitivamente." );
+				}
+
+	            "Cerca del puesto puedes ver a Sulfius, el vendedor.";
+	]
+has  ;
+
+PuestoMercado PUESTO_DE_CUERO "puesto de artículos de cuero" PLAZA_DEL_CASTILLO
+with
+	nombre 'puesto' 'cuero' 'articulos',
+	descripcion "Últimamente, la moda en Westmorland son unas insólitas indumentarias de
+	             cuero más bien ajustado y oscuro. ¿A dónde irá a parar el mundo?."
+has  ;
+
+Respondona piensasEnCasarte
+private
+	elementos
+		"El regalo típico para una amante melosa."
+		"Otra cosa que debería hacer, a mi edad, es casarme, aunque en mi
+	             descargo puedo aducir que no he tenido mucho tiempo."
+;
+
+PuestoMercado PUESTO_DE_FLORES "puesto de flores" limbo
+with
+	nombre 'puesto' 'flores',
+	descripcion [;
+		print "Varios tipos de ramos de flores de distintas especies
+		       y colorido se agolpan en este puesto.^";
+		jugador.piensa( piensasEnCasarte.dev_msg() );
+	]
+has  ;
+
+DejadoDesaparecido bolsaDeComida "bolsa de comida" PUESTO_DE_FRUTA
+with
+	nombre 'bolsa' 'comida',
+	msgPerdida "Los restos de la comida que dejaste aquí están esparcidos
+			    por doquier, destruídos por las alimañas... ahora no sirve
+			    de nada...",
+	descripcion "Comida seca, perfecta para llevar a largos viajes.",
+	antes [;
+		buscarEn:
+			print "La registras minuciosamente y encuentras...^";
+			<<examinar self>>;
+		vaciar:
+			"No sería inteligente dejar caer la comida por ahí...";
+		cerrar:
+			"Siempre la llevas cerrada.";
+		abrir:
+			print "La abres, y ves...^";
+			<<examinar self>>;
+		comer:
+			"Aún no es el momento de comer.";
+	],
+has femenino comestible
+;
+
+ObjetoEstatico ROCA "roca" EXPLANADA_DE_LA_ROCA
+with
+	nombre 'roca',
+	descripcion "En la base de la roca con forma de oso hay una puerta simple."
+has femenino ;
+
+Objeto SETA "seta" CAMINO_DE_LAS_MONTANAS
+with
+	nombre 'seta',
+	flipas [;
+		"Te sientes como levantado del suelo...^
+		Notas un pequeño mareo... una extraña bruma te envuelve...^
+		Extrañas luces y destellos inundan tu vista...^";
+	],
+	descripcion "Es un pequeñísimo hongo. ¿Tendrá efectos alucinógenos?.",
+	antes [;
+		comer:
+			self.flipas();
+
+			if ( localizacion == ABISMO ) {
+				ABISMO.mostrarPuente();
+			} else print "...finalmente, el efecto se pasa... todo parece normal de nuevo...^";
+
+			move self to CAMINO_DE_LAS_MONTANAS;
+			give self oculto;
+			rtrue;
+	]
+has femenino oculto comestible;
+
+ObjetoEstatico SUELO "suelo" limbo
+with
+	nombre 'suelo',
+	descripcion "De piedra, prolijamente incrustadas"
+has  ;
+
+Objeto bota "bota" ESPACIO_ENTRE_LOS_ARBUSTOS
+with
+	nombre 'bota',
+	descripcion "Vieja y miserable."
+has femenino;
+
+Objeto botijo "botijo" ESPACIO_ENTRE_LOS_ARBUSTOS
+with
+	nombre 'botijo',
+	descripcion "Vacío y cochambroso."
+;
+
+Objeto nota "nota" ESPACIO_ENTRE_LOS_ARBUSTOS
+with
+	nombre 'nota',
+	descripcion
+		"Pone:^~El Trono de Inglaterra (1a parte).^^
+		 Objetos para mapear el laberinto.^
+		 Selena y Baltasar~"
+has femenino;
+
+ObjetoEstatico paredCallejon2 "pared" CALLEJON_2
+with
+	nombre_m 'pared' 'muro',
+	nombre_mp 'paredes' 'muros',
+	genero G_MASCULINO,
+	descripcion "Las paredes no contienen nada reseñable, excepto una hiedra
+	             que crece entretejida sobre el muro norte."
+;
+
+ObjetoEstatico callejonFalsoCallejon2 "callejón" CALLEJON_2
+with
+        	nombre 'callejon' 'pasaje' 'pasillo' 'corredor' 'pasadizo',
+        	descripcion "Lo único reseñable de este callejón respecto a los otros
+        	             pasajes es la hiedra que crece en la pared del muro norte.",
+	antes [;
+	    examinar: rfalse;
+	    default: "Una idea de dudosa utilidad.";
+	]
+;
+
+ObjetoCortable hiedraCallejon2 "hiedra" CALLEJON_2
+class ObjetoEstatico
+with
+	nombre 'hiedra' 'enredadera',
+	objetoCortante espada,
+	alCortar "¡Increíble...! La hiedra era tan tupida que escondía un hueco
+	          en la pared por el que podrías pasar casi sin agacharte...",
+	descripcion_cortado "La hiedra muestra ahora un hueco por el que podrías
+	                     pasar.",
+	descripcion_nocortado "La hiedra es muy tupida. Es curioso, no has visto
+	                       hiedra en ninguna otra pared de este laberinto.",
+    reaccionar_antes [;
+        subir, trepar: <<meterse self>>;
+    ],
+    antes [;
+        trepar, meterse: "La hiedra no es suficientemente fuerte
+                   para sostenerte. Ni
+                   si quiera lo intentas.";
+        coger, tirar: "Arrancas sin dificultad algunas hojas, pero eso no es
+                   de gran utilidad.";
+        empujar: "Lo haces, pero no sirve de mucho.";
+
+    ]
+has femenino;
+
+ObjetoEstatico felpudo "felpudo" EXPLANADA_DE_LA_ROCA
+with
+	nombre 'felpudo',
+	descripcion "Es un felpudo basto, hecho con lana de oveja.",
+	antes [;
+		buscarEn, empujar, tirar, MirarDebajo, agitar, atacar:
+			if ( LLAVE_PEQUENA in felpudo
+			  || LLAVE_PEQUENA in limbo )
+			{
+				move LLAVE_PEQUENA to jugador;
+				"De debajo del felpudo aparece una pequeña llave, que
+				 tomas para ti.";
+				}
+		coger, vaciar:
+			"Mejor dejarlo, es de Merlín...";
+		Recibir: "¿¡En el felpudo!?";
+	],
+	reaccionar_antes [;
+		examinar:
+			if ( uno == obj_abajo ) {
+				print "En el suelo hay un felpudo...^";
+				<<examinar self>>;
+			}
+	]
+has recipiente abierto;
+
+objeto chisquero "chisquero" limbo
+with
+	nombre 'chisquero' 'encendedor',
+	descripcion
+		"Es una de esos encendedores que usan los campesinos."
+;
+
+objeto llavePortillo "llave del portillo" limbo
+with
+	nombre 'llave' 'laton' 'portillo',
+	descripcion "Es una llave de latón, bastante grande."
+has femenino;
+
+objeto antorcha "antorcha" TUNEL_DE_ESCAPE
+with
+	nombre 'antorcha' 'llama' 'luz',
+	descripcion [;
+                if ( self hasnt luz ) {
+                    "Podría ser encendida para dar luz,
+                     aunque está bastante húmeda.";
+                }
+                "Un tanto vieja y húmeda.";
+          ],
+	antes [;
+		apagar:
+			if ( self has luz )
+				"Mejor no arriesgarse a apagarla...";
+			else 	"No está encendida.";
+		quemar, encender:
+			if ( self has encendida ) {
+				"Ya la encendiste antes...";
+			}
+
+			if ( chisquero in jugador ) {
+				give self luz;
+				give self encendido;
+				"Enciendes la antorcha, que crepita y lanza una densa humareda...";
+			}
+			else "Necesitas tener algo para encenderla...";
+	],
+	reaccionar_antes [;
+		if ( localizacion == MURO_TRASERO_DEL_CASTILLO
+		  || localizacion == ROMPIENTE_OESTE
+		  || localizacion == ESQUINA_NORESTE_DEL_CASTILLO
+		  || localizacion == CAMINO_DE_RONDA_ESTE
+		  || localizacion == CAMINO_DE_RONDA_OESTE )
+		{
+		      if ( self has luz ) {
+			print "^^Escuchas unos gritos en el almenar del castillo.
+			       Pronto te das cuenta de la razón: llevas la antorcha encendida,
+			       indicándole vuestra posición a todos los guardias del castillo.
+			       Estáis perdidos.
+			^^";
+
+			banderafin = 1;
+			rtrue;
+		      }
+		}
+	],
+	despues [;
+	      dejar:
+                  if ( self has luz ) {
+		give self ~luz;
+		give self ~encendido;
+		"Al contacto con la húmeda piedra de la cueva, la antorcha se consume lentamente,
+		        	hasta que se apaga totalmente...";
+                  }
+	]
+has femenino conmutable;
+
+Objeto uniformes ALMACENES
+with
+	nombre_corto "uniformes",
+	nombre_mp 'uniformes',
+	genero G_MASCULINO + G_PLURAL,
+	nombre_m 'uniforme',
+	descripcion "Son uniformes como los de los soldados de este castillo.",
+	antes [;
+		vestir:
+			self.genero = G_MASCULINO;
+			self.nombre_corto = "uniforme";
+			self.descripcion = "Es un uniforme verde y naranja.";
+	],
+	despues [;
+		coger:
+			uther.decir( "¡Son uniformes como los de la soldadesca del castillo!" );
+		vestir:
+			print "^El Rey Uther también se pone uno.^";
+			uther.decir( "¡Buena idea, Ulfius!, con este disfraz pasaremos inadvertidos." );
+		desvestir:
+			uther.decir( "Ulfius, no creo que sea una buena idea." );
+		dejar:
+			uther.decir( "Ulfius, ¡nos descubrirán!" );
+	]
+has nombreplural prenda;
+
+object barraHierro "barra de hierro" limbo
+with
+	nombre 'barra' 'hierro' 'palanca',
+	adjetivos 'oxidada',
+	descripcion
+		"Pues sí, una barra de hierro. Podría servir de palanca. Está un poco oxidada."
+has femenino valepuntos;
+
+Objeto llaveMaestra "llave maestra" mesaOficialGuardia
+with
+	nombre 'llave' 'maestra',
+	descripcion "Una pesada llave de hierro.",
+	despues [;
+		coger:
+			Conseguido( TAREA_COGER_LLAVE_MAESTRA );
+	],
+has femenino;
+
+! =============================== Personajes===================================
+
+Include ">personajesTrono.inf";
+
+! ============================== CORTOS =======================================
+
+CortoMetraje cortoInicio
+with
+	descripcion
+		[;
+			self.Delay = 5;
+			clearMainWindow();
+			print (s_bold) "^Westmorland...^";
+			print (s_underline) "c. 400 d.c.^^^";
+
+			kay.decir( "Mi señor Ulfius.... ¡Mi señor Ulfius...!" );
+			kay.decir( "¡Ulfius!" );
+			jugador.decir( "...!?... ¿Eh...?¿Kay...?¿Qué... qué sucede?" );
+			jugador.decir( "..." );
+			kay.decir( "¡Mi señor Ulfius! ¡El rey Uther os convoca! ¡Debéis acudir cuanto antes a palacio!" );
+			jugador.decir( "¿¡Qué sucede...!?¿Son los Sajones de nuevo?" );
+			kay.decir( "...creo que no, mi señor... Westmorland está a salvo... pero... ¡daos prisa!" );
+			jugador.decir( "Está bien, está bien, acudiré en cuanto me vista." );
+		]
+		"^Kay abandona tu casa, casi precipitadamente^..."
+		"^Aún tratando de despertar del todo, te pones tus ropas. El sol apenas ha salido cuando
+		 abandonas tu hogar y te diriges al castillo.^..."
+		"^Recorres un breve trecho hacia el sur y hacia el oeste desde tu casa.^..."
+		"^Entras en el castillo, y recorres el pasillo principal..."
+		"^La sala del trono, a pesar de lo temprano que es, está casi llena..."
+		"^Esto no puede indicar nada bueno.^..."
+;
+
+! ====================================== El final de la aventura =============
+CasaMadera TU_NUEVA_CASA "Tu nueva casa"
+with
+          al_e "No es el momento.",
+	descripcion "Una pequeña casa de granjero, de una sola estancia, la cuál
+	             sirve como cocina, y sala de estar según la
+	             pared que se escoja y el grueso cortinaje que se corra.
+	             La única habitación separada por un tabique de troncos de
+	             madera, de la misma factura que las paredes exteriores de
+	             la casa, es el dormitorio, en la parte este.
+	             "
+;
+
+ObjetoEstatico puertaNuevaCasa "puerta" TU_NUEVA_CASA
+with
+    nombre 'puerta',
+    descripcion [;
+        print "Pues sí, ahí donde la ves, la puerta de tu casa.";
+        if ( self has abierta )
+                print " Está abierta.^";
+        else    print "^";
+
+        rtrue;
+    ],
+    antes [;
+        cerrar:
+            "Tienes cosas más importantes de las que ocuparte ahora mismo...";
+        abrir:
+           if ( self hasnt abierto ) {
+               give self abierto;
+               epilogo2();
+               rtrue;
+           } else "La puerta está ya abierta... y Merlín frente a ti.";
+    ]
+has femenino;
+
+ObjetoEstatico cortinajesNuevaCasa "cortinajes" TU_NUEVA_CASA
+with
+    nombre_mp 'cortinajes',
+    nombre_fp 'cortinas' 'divisiones',
+    nombre_f 'cortina',
+    nombre_m 'cortinaje',
+    genero G_MASCULINO + G_PLURAL,
+    descripcion
+        "Permiten hacer pequeñas divisiones dentro de la casa,
+         según se necesiten ciertas funciones u otras."
+;
+
+ObjetoEstatico bebe "bebé" limbo
+with
+    nombre 'bebe' 'nino',
+    descripcion
+        "Un pequeño e indefenso niño se retuerce entre el ropaje de Merlín.",
+    antes [;
+        examinar: rfalse;
+        coger: "Merlín lo protege con fuerza.";
+        default: "Merlín sostiene al niño entre sus brazos y lo protege.";
+    ]
+;
+
+ObjetoEstatico cocinaNuevaCasa "cocina" TU_NUEVA_CASA
+with
+    nombre 'cocina',
+    descripcion
+        "Una aparatosa cocina de leña se encuentra en una de las partes de la
+         casa."
+has femenino;
+
+ObjetoEstatico dormitorioNuevaCasa "dormitorio" TU_NUEVA_CASA
+with
+    nombre 'dormitorio',
+    descripcion
+        "Se encuentra en la parte este de la casa, y es la única habitación
+         separada del resto por un tabique real.^
+         Tu mujer se encuentra descanasado allí ahora, tras una dura jornada."
+;
+
+[ epilogo1 x;
+	clearMainWindow();
+	print (s_bold) "Epílogo";
+
+	! Poner todos los objetos en el limbo
+	objectloop ( x ) {
+	    if ( x in jugador ) {
+	        move x to limbo;
+	    }
+	}
+
+	! Comenzar el epílogo
+	print "^^Ha pasado mucho tiempo desde aquellos acontecimientos.^
+	       Por un lado casi se han desvanecido, deformado y empañado en tu
+	       mente... por el otro, prefieres no hacer ningún esfuerzo por
+	       recordarlos.^^";
+	jugadorA( TU_NUEVA_CASA, 2 );
+
+	print "^Es de noche, y llueve. Descansas después de una larga jornada
+	       de trabajo";
+	wait( "...^" );
+
+	print "^Alguien llama a la puerta.^Qué extraño";
+	wait( "...^" );
+];
+
+[ epilogo2;
+	move Merlin to localizacion;
+	move bebe to localizacion;
+
+	print "^Abres la puerta.^Frente a tí, un anciano, con una larga túnica y un cinto por
+	       toda vestimenta, sostiene a un bebé en sus brazos.^
+	       El anciano entra en la casa.^";
+	wait( "...^" );
+];
+
+[ epilogo3;
+	print "^Llamas a tu esposa...^";
+	jugador.decir( "Cariño, debo contarte algo..." );
+
+	banderafin = 2;
+	print (s_bold) "^^^Fin.^";
+];
+
+
+! ====================================== Gramática ===========================
+[xyzzySub dest;
+
+	if ( merlin in localizacion ) {
+		merlin.decir( "¡Las manos quietas...! Para mago yo, caballero." );
+	}
+	else
+	if ( localizacion == CUEVA_PROFUNDA )
+	{
+		print "Un ligero temblor sacude la cámara";
+		wait( "...^" );
+		print "Los restos humanoides tiemblan con el poder de la palabra";
+		wait( "...^" );
+		print "Las manos del esqueleto alzan las hachas en el aire, con renqueante inseguridad";
+		wait( "...^" );
+		"Repentinamente, el temblor se detiene, y las manos del esqueleto parecen
+		 perder su fuerza, desplomándose las hachas hasta el suelo.^";
+	}
+	else
+	if ( localizacion == LAGO
+	  || localizacion == COLINA )
+	{
+		print "^Te ves envuelto en una extraño vapor";
+		wait( "...^" );
+
+		print "te elevas por el
+		       aire y caes, aturdido, en";
+		wait( "...^" );
+
+		dest = LAGO;
+
+		if ( localizacion == LAGO ) {
+			dest = COLINA;
+		}
+
+		jugadorA( dest, 2 );
+	}
+	else print "No sucede nada, aparentemente.^";
+
+	rtrue;
+];
+
+[ayudaSub;
+	print "^Las órdenes siguientes son básicas y puede encontrarse
+	  en casi cualquier aventura conversacional.
+	  Pueden introducirse en infinitivo, imperativo, y en ocasiones,
+	  que se señalan con la opción entre paréntesis, reducir la orden
+	  a una o dos letras.
+	  El jugador puede tratar siempre de hacer otras acciones.^^";
+	wait( "...^" );
+	print (s_fixed)
+	 "Ayuda              -   Esta ayuda.^
+	 (n)orte            -   Ir al norte (adelante).^
+	 (s)ur              -   Ir al sur (atrás).^
+	 (e)ste             -   Ir al este (derecha).^
+	 (o)este            -   Ir al oeste (izquierda).^
+	 arriba, subir      -   Ir arriba.^
+	 abajo, bajar       -   Ir abajo.^
+	 (ex)aminar x       -   Da una descripción de x.^
+	 examinarme, xme    -   Información sobre tu misión y tú.^
+	 (h)ablar con y     -   Permite comunicarse con y.^
+	 (c)oge x, (d)eja x -   x pasa a ser o deja de ser llevado.^
+	 (i)nventario       -   Da una lista de los objetos llevados.^
+	 dar x a y          -   Ofrece el objeto x al personaje y.^
+	 comprale a y       -   Le compra al personaje y lo que tenga a la venta.^
+	 puntos             -   Puntuación obtenida.^
+	 puntos total       -   Puntuación detallada.^";
+	wait( "...^" );
+	print
+	 "^^
+	 Por Selena y Baltasar, el Arquero.
+	 ^^
+      Mándanos tus comentarios a: baltasarq@@64gmail.com
+      y selenavirtual@@64yahoo.com.ar
+      ^^
+      Tú eres...
+	^";
+	<<examinar ulfius>>;
+];
+
+[ arrancarSub;
+	"No parece que vaya a servir de mucho...";
+];
+
+[ levantarConSub;
+	"No conseguirás nada levantando ", (el) uno, " con ", (el) otro;
+];
+
+[ robarSub;
+	if ( uno in jugador ) {
+		print "Veamos...^";
+		<< inv >>;
+	}
+
+	print "Podríais probar a coger ", (el) uno," símplemente... veamos...^";
+	<< coger uno >>;
+];
+
+[ venderSub;
+	if ( otro == jugador ) {
+		print "¿Vas a venderte ", (el) uno, " a ", (el) otro,"?^";
+		rtrue;
+	}
+
+	if ( otro ~= Nothing ) {
+			"No te has esforzado tanto para conseguir ", (el) uno,
+			" como para vender o malvender alegremente.";
+	}
+	else 	"¿A quién quieres vender?";
+];
+
+[ contarSub;
+	if ( uno has nombreplural ) {
+		if ( uno has femenino )
+				"Más de una, seguro...";
+		else		"Más de uno, seguro...";
+	}
+	else {
+		if ( uno has femenino )
+				"Una.";
+		else 	"Uno.";
+	}
+];
+
+Extend 'lanza' first
+	* held -> Lanzar
+	* held 'hacia' 'delante'/'adelante' -> Lanzar
+	* held 'adelante' -> Lanzar
+;
+
+Extend 'habla' replace
+  	* 'con' creature -> hablar
+  	* 'a//' creature -> hablar
+  	* 'al' creature -> hablar
+;
+
+Verb 'vende'
+	* held 'a//' creature -> vender
+;
+
+Extend 'compra' replace
+	* 'a//'/'al' creature -> comprar
+  	* noun 'a//'/'al' creature -> comprar reverse
+;
+
+Extend 'pon' first
+	* multiexcept 'bajo' noun -> Meter
+	* multiexcept 'debajo' 'de' noun -> Meter
+;
+
+Verb 'roba'
+	* noun -> robar
+;
+
+Verb 'arranca'
+	* noun-> tirar
+;
+
+Verb 'xyzzy'
+	* -> xyzzy
+;
+
+Verb meta 'ayuda' 'pistas'
+	* -> ayuda
+;
+
+Verb 'levanta'
+	* noun -> MirarDebajo
+	* noun 'con' held -> levantarCon
+;
+
+Extend 'busca' first
+	* 'entre' noun -> buscarEn
+;
+
+Extend 'trepa' first
+    * -> Trepar
+    * 'en' noun -> Trepar
+;
+
+Verb 'destrepa'
+    * -> Bajar
+    * noun -> Bajar
+    * 'por' noun -> Bajar
+;
+
+Verb 'haz'
+	* 'palanca' 'con' held 'en' noun -> levantarCon reverse
+;
+VerboIrregular "hacer" with imperativo 'haz';
+
+Extend 'bebe' last
+	* 'de' noun -> beber
+;
+
+Extend 'deja' last
+	* held 'bajo' noun -> meter
+;
+
+Extend 'ataca' last
+	* 'con' held -> atacar
+	* creature 'con' held -> atacar
+	* noun 'con' held -> cortar
+	* 'a//'/'al' creature 'con' held -> atacar
+	* 'a//'/'al' noun 'con' held -> cortar
+;
+
+extend 'cuenta' first
+	* noun -> contar
+;
+
+Verb 'aparta' = 'empuja';
+Verb 'comprale' = 'compra';
+Verb 'h' = 'habla';
+Verb 'c' = 'coge';
+Verb 'd' = 'deja';
+Verb 'v' = 'vende';
+
+! -----------------------------------------------------------------------------
+! Déjalo, es sólo decorado
+! -----------------------------------------------------------------------------
+
+class DecoradoBase
+class Decorado
+with
+	antes [;
+		examinar:
+			rfalse;
+		oler, tocar, probar:
+			"Nada de especial.";
+		coger, subir, girar, empujar, tirar, vaciar:
+			"¿Voecencia cree que eso podría servir realmente para algo?";
+		buscarEn, meterse:
+			"No serviría de nada.";
+		default:
+			"Me temo que no puedes hacer eso.";
+	],
+	reaccionar_antes [;
+		tocar, probar, oler:
+			if ( uno == obj_arriba ) {
+				"Cómo vas a hacer eso... ¡No puedes llegar hasta el cielo!";
+			}
+	]
+;
+
+class DecoradoCalle(10)
+class DecoradoBase
+with
+	describir
+     	'adoquines' "Sí, las calles están hechas de pavés." G_MASCULINO + G_PLURAL
+     	'casas' "Varias casas bajas se apelotonan frente a la calle." G_FEMENINO + G_PLURAL
+		'sol'   "Paso de mirar al sol directamente." 0
+		'palacio' "El castillo se alza imponente, a cierta distancia." 0
+		'castillo' "El castillo, cercano, se alza imponente." 0
+		'muro' "La muralla se vé en algunas direcciones." 0
+		'muralla' "La muralla se vé en algunas direcciones." G_FEMENINO
+;
+
+class DecoradoInteriorCueva(10)
+class DecoradoBase
+with
+	describir
+	          'apertura' "Comunica una cámara con otra." G_FEMENINO
+	          'aperturas' "No, no hay más de una." G_FEMENINO + G_PLURAL
+	          'cueva' "Oscura y húmeda." G_FEMENINO
+	          'camara' "Oscura y húmeda." G_FEMENINO
+	          'camaras' "Sí, la cueva está formada por varias cámaras." G_FEMENINO + G_PLURAL
+		'paredes' "Húmedas." G_FEMENINO + G_PLURAL
+		'pared' "Húmeda." G_FEMENINO
+	,
+	reaccionar_antes [;
+		tocar, probar, oler:
+			if ( uno == obj_arriba ) {
+				"El techo, alto por encima de tu cabeza, es húmedo y huele a moho.";
+			}
+	]
+;
+
+class DecoradoMontePedregoso(10)
+class DecoradoBase
+with
+	describir
+	          'tierra' "Es más amarillenta por aquí, más pedregosa." G_FEMENINO
+		'hojas' "Las hojas de los árboles son numerosas, ciertamente." G_FEMENINO + G_PLURAL
+		'arboles' "Cada vez son más escasos." G_PLURAL
+		'piedras' "Haylas por doquiera se mire." G_FEMENINO + G_PLURAL
+		'arbustos' "Pequeños arbustos." G_PLURAL
+		'arbusto' "Pequeños arbustos" G_PLURAL
+		'maleza' "Pequeños arbustos" G_FEMENINO
+		'matas' "Por doquiera." G_FEMENINO + G_PLURAL
+		'camino' "El camino, hollado mil veces, serpentea bajo tus pies." 0
+		'senda' "En realidad es algo más grande, como un camino." G_FEMENINO
+;
+
+class DecoradoMonte(24)
+class DecoradoBase
+with
+	describir
+	          'tierra' "Oscura y fértil, tapizada de vida por doquier." G_FEMENINO
+		'piedras' "Alguna hay." G_FEMENINO + G_PLURAL
+		'camino' "El camino, hollado mil veces, serpentea bajo tus pies." 0
+		'vereda' "En realidad es algo más grande, como un camino." G_FEMENINO
+		'senda' "En realidad es algo más grande, como un camino." G_FEMENINO
+;
+
+class DecoradoBosque(24)
+class ObjetoEstatico
+with
+	nombre_corto "bosque",
+	genero G_MASCULINO,
+	nombre_m 'bosque' 'arbusto',
+	nombre_mp 'arboles' 'arbustos',
+	nombre_f 'boveda' 'maleza',
+	nombre_fp 'hojas' 'matas' 'hojas',
+	descripcion "Muchos y muy tupidos árboles acompañan el camino. Sus hojas se entrelazan formando
+	             una tupida bóveda, mientras en el suelo varios arbustos completan una bella escena."
+;
+
+class DecoradoPalacio(24)
+class DecoradoBase
+with
+	describir
+		'arco' "Los arcos permiten el paso entre las estancias." 0
+		'arcos' "Los arcos permiten el paso entre las estancias." G_PLURAL + G_MASCULINO
+		'piedra' "Forman los muros." G_FEMENINO
+		'piedras' "Forman los muros." G_FEMENINO + G_PLURAL
+		'pared' "Son lisos muros de gruesa piedra, con antorchas fijadas a alta altura." 0
+		'paredes' "Son lisos muros de gruesa piedra, con antorchas fijadas a alta altura." G_PLURAL
+		'muro' "Son lisos muros de gruesa piedra, con antorchas fijadas a alta altura." 0
+		'muros' "Son lisos muros de gruesa piedra, con antorchas fijadas a alta altura." G_PLURAL
+		'antorchas' "Están fijadas a gran altura." G_FEMENINO + G_PLURAL
+		'antorcha' "Están fijadas a gran altura." G_FEMENINO
+	,
+	reaccionar_antes [;
+		tocar, probar, oler:
+			if ( uno == obj_arriba ) {
+				"El techo, muy alto, no tiene nada que reseñar.";
+			}
+	]
+;
+
+class DecoradoExteriorPalacio(16)
+class DecoradoBase
+with
+	describir
+		'muros' "Sí, las murallas del castillo. Lisas y altas." G_MASCULINO + G_PLURAL
+		'murallas' "Sí, las murallas del castillo. Lisas y altas." G_FEMENINO + G_PLURAL
+		'muro' "Sí, las murallas del castillo. Lisas y altas." G_MASCULINO
+		'muralla' "Sí, las murallas del castillo. Lisas y altas." G_FEMENINO
+		'almenar' "Sí, son las típicas almenas defensivas sobre los muros." 0
+		'almenas' "Sí, son las típicas almenas defensivas sobre los muros." G_PLURAL
+		'palacio' "El castillo se alza imponente." 0
+		'castillo' "El castillo se alza imponente." 0
+		'arboles' "Alguno hay." G_PLURAL
+		'piedras' "Alguna hay. Sobre todo en el muro." G_FEMENINO + G_PLURAL
+;
+
+class DecoradoLaberinto(16)
+class DecoradoBase
+with
+	describir
+		'piedra' "Forman los muros." G_FEMENINO
+		'piedras' "Forman los muros." G_FEMENINO + G_PLURAL
+		'pared' "Son lisos muros de gruesa piedra, por encima de tu cabeza." 0
+		'paredes' "Son lisos muros de gruesa piedra, muy altos." G_PLURAL
+		'muro' "Son lisos muros de gruesa piedra, por encima de tu cabeza." 0
+		'muros' "Son lisos muros de gruesa piedra, muy altos." G_PLURAL
+;
+
+class DecoradoCasaMadera(10)
+class DecoradoBase
+with
+	describir
+		'troncos' "Sí, definitivamente, son troncos de madera." G_PLURAL
+		'pared' "Las paredes están hechas de troncos apilados, bien encajados." 0
+		'paredes' "Las paredes son de madera, hechas de troncos." G_PLURAL
+	,
+	reaccionar_antes [;
+		tocar, probar, oler:
+			if ( uno == obj_arriba ) {
+				"No llegas hasta el techo de la cabaña, el cual por otra parte no tiene nada
+				 de particular.";
+			}
+	]
+;
+
+[ iniciarDecorados muestraNum num;
+	num = iniciarDecoradosCalle();
+
+    	if ( muestraNum ) {
+		print "^Núm. calles: ", num, " remanentes: ", decoradoCalle.remaining();
+	}
+
+	num = iniciarDecoradosInteriorCueva();
+
+	if ( muestraNum ) {
+		print "^Núm. cuevas: ", num, " remanentes: ", decoradoInteriorCueva.remaining();
+	}
+
+	num = iniciarDecoradosMonte();
+
+	if ( muestraNum ) {
+		print "^Núm. montes: ", num, " remanentes: ", decoradoMonte.remaining();
+	}
+
+	num = iniciarDecoradosMontePedregoso();
+
+	if ( muestraNum ) {
+		print "^Núm. montes pedregosos: ", num, " remanentes: ", decoradoMontePedregoso.remaining();
+	}
+
+	num = iniciarDecoradosPalacio();
+
+	if ( muestraNum ) {
+		print "^Núm. habitaciones de palacios: ", num, " remanentes: ", decoradoPalacio.remaining();
+	}
+
+	num = iniciarDecoradosExteriorPalacio();
+
+	if ( muestraNum ) {
+		print "^Núm. localizaciones exterior de palacio: ", num, " remanentes: ", decoradoExteriorPalacio.remaining();
+	}
+
+	num = iniciarDecoradosLaberinto();
+
+	if ( muestraNum ) {
+		print "^Núm. habitaciones del laberinto: ", num, " remanentes: ", decoradoLaberinto.remaining();
+	}
+
+	num = iniciarDecoradosCasaMadera();
+
+	if ( muestraNum ) {
+		print "^Núm. casas de madera: ", num, " remanentes: ", decoradoCasaMadera.remaining(), "^";
+	}
+
+];
+
+[ iniciarDecoradosCalle x nobj i;
+	i = 0;
+
+	objectloop ( x ofclass Calle ) {
+		nobj = DecoradoCalle.create();
+		move nobj to x;
+		i++;
+	}
+
+	return i;
+];
+
+[ iniciarDecoradosMonte x nobj i;
+	i = 0;
+
+	objectloop ( x ofclass Monte ) {
+		i++;
+		nobj = DecoradoMonte.create();
+		move nobj to x;
+
+		nobj = DecoradoBosque.create();
+		move nobj to x;
+	}
+
+	return i;
+];
+
+[ iniciarDecoradosMontePedregoso x nobj i;
+	i = 0;
+
+	objectloop ( x ofclass MontePedregoso ) {
+		i++;
+		nobj = DecoradoMontePedregoso.create();
+		move nobj to x;
+	}
+
+	return i;
+];
+
+[ iniciarDecoradosInteriorCueva x nobj i;
+	i = 0;
+
+	objectloop ( x ofclass InteriorCueva ) {
+		i++;
+		nobj = DecoradoInteriorCueva.create();
+		move nobj to x;
+	}
+
+	return i;
+];
+
+[ iniciarDecoradosPalacio x nobj i;
+	i = 0;
+
+	objectloop ( x ofclass Palacio ) {
+		i++;
+		nobj = DecoradoPalacio.create();
+		move nobj to x;
+	}
+
+	return i;
+];
+
+[ iniciarDecoradosExteriorPalacio x nobj i;
+	i = 0;
+
+	objectloop ( x ofclass ExteriorPalacio ) {
+		i++;
+		nobj = DecoradoExteriorPalacio.create();
+		move nobj to x;
+	}
+
+	return i;
+];
+
+[ iniciarDecoradosLaberinto x nobj i;
+	i = 0;
+
+	objectloop ( x ofclass Laberinto ) {
+		i++;
+		nobj = DecoradoLaberinto.create();
+		move nobj to x;
+	}
+
+	return i;
+];
+
+[ iniciarDecoradosCasaMadera x nobj i;
+	i = 0;
+
+	objectloop ( x ofclass CasaMadera ) {
+		i++;
+		nobj = DecoradoCasaMadera.create();
+		move nobj to x;
+	}
+
+	return i;
+];

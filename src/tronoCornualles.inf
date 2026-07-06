@@ -1,0 +1,919 @@
+
+! [Aquí se podrán encontrar dos uniformes de guardia]
+
+Palacio ALMACENES "Almacenes"
+    with
+	descripcion " Multitud de objetos y ropajes se acumulan en esta estancia, amueblada tan solo con estanterías del suelo al techo. ",
+	al_n BODEGA,
+	al_s PASILLO_NORTE,
+;
+
+ObjetoEstatico ropajes "ropajes" ALMACENES
+with
+	nombre_mp 'objetos' 'ropajes',
+	genero G_MASCULINO + G_PLURAL,
+	nombre_f 'ropa',
+	nombre_m 'objeto',
+	descripcion "Varios objetos y ropajes se guardan en esta sala.",
+	antes [;
+		coger: "Son objetos sin valor.";
+	],
+has nombreplural;
+
+Palacio ARMERIA
+with
+          nombre_corto "Armería",
+	descripcion " La armería es una gran estancia con todo tipo de armas, apiladas en montones
+	              contra la pared o en soportes especiales, especialmente las ballestas,
+	              lanzas y lombardas.
+	              Otras armas que puedes ver aquí son espadas, cascos y escudos de todo tipo.",
+	al_s PASILLO_DE_SERVICIO,
+has femenino;
+
+ObjetoEstatico soporteArmas "soporte" ARMERIA
+with
+	nombre 'soporte',
+	descripcion "Es un soporte para apoyar armas como lanzas y lombardas.",
+has soporte;
+
+ObjetoEstatico armasAtaque "armas de ataque" soporteArmas
+with
+	nombre_fp 'armas' 'lombardas' 'lanzas' 'ballestas',
+	nombre_f 'lombarda' 'lanza' 'ballesta' 'ataque',
+	genero G_PLURAL + G_FEMENINO,
+	descripcion "Sí, son ballestas, lanzas y lombardas.",
+	antes [;
+		coger: "Mejor no ir cargando con una lombarda y demás por ahí...";
+	],
+has nombreplural femenino;
+
+ObjetoEstatico armasDefensa "armas de defensa" soporteArmas
+with
+	nombre_mp 'armas' 'cascos' 'escudos',
+	nombre_m 'casco' 'escudo',
+	nombre_fp 'corazas' 'espadas' 'armaduras',
+	nombre_f 'coraza' 'espada' 'armadura' 'defensa',
+	genero G_PLURAL + G_FEMENINO,
+	descripcion "Sí, son varias armas de protección: cascos, espadas y escudos, principalmente.",
+	antes [;
+		coger: "Mejor no ir cargando con escudos y demás por ahí...";
+	],
+has nombreplural femenino;
+
+Palacio BODEGA "Bodega"
+with
+	descripcion " Multitud de barriles se acumulan contra las cuatro paredes,
+	              en una estancia que se alarga de este a oeste.
+	              Sólo la puerta de acceso se encuentra libre.
+	              En un soporte del centro, puedes ver varias botellas colocadas cuidadosamente.",
+	al_n PASILLO_NORTE,
+	al_s ALMACENES,
+;
+
+ObjetoEstatico barriles "barriles" BODEGA
+with
+	nombre_mp 'barriles',
+	nombre_m  'barril',
+	genero G_MASCULINO + G_PLURAL,
+	descripcion "Varios barriles se amontonan contra las paredes.",
+has nombreplural;
+
+ObjetoEstatico soporteBodega "soporte" BODEGA
+with
+	nombre 'soporte',
+	descripcion "Efectivamente, es un soporte para botellas."
+has soporte;
+
+ObjetoEstatico botellas "botellas" soporteBodega
+with
+	nombre_mp 'botellas',
+	nombre_m  'botella',
+	genero G_FEMENINO + G_PLURAL,
+	descripcion "Varias botellas están cuidadosamente colocadas en un soporte en el centro de la estancia.",
+	antes [;
+		coger: "Las botellas no servirían de nada ahora.";
+		girar: "Escoges una botella al azar y la giras. No sucede absolutamente nada.";
+		empujar, tirar, vaciar: "No conseguirás nada así. Por cierto, Uther parece impacientarse...";
+	]
+has nombreplural femenino;
+
+ExteriorPalacio CAMINO_DE_RONDA_ESTE "Camino de Ronda Este"
+with
+	descripcion " El camino de ronda aún avanza más hacia el norte, rodeando el castillo.
+	              A los lados, encuentras el camino cerrado por el mar
+	              y por el casi liso muro del castillo.
+	              El camino atraviesa el profundo foso del castillo mediante una endeble pasarela
+	              de madera, que podría eliminarse rápidamente en caso de asedio.",
+	al_n ESQUINA_NORESTE_DEL_CASTILLO,
+	al_s SURESTE_DEL_CASTILLO,
+	abajo FOSO_ESTE,
+
+;
+
+ExteriorPalacio CAMINO_DE_RONDA_OESTE "Camino de ronda oeste"
+with
+	descripcion " El camino de ronda aún avanza más hacia el norte, rodeando el castillo.
+	              A los lados, encuentras el camino cerrado por el mar, que se estrella
+	              contra unos rompientes extendiéndose hacia el norte,
+	              y por el casi liso muro del castillo.
+	              El camino atraviesa el profundo foso del castillo
+	              mediante una endeble pasarela de madera, que podría eliminarse
+	              rápidamente en caso de asedio.",
+	al_n ROMPIENTE_OESTE,
+	al_s SUROESTE_DEL_CASTILLO	,
+	abajo FOSO_OESTE,
+;
+
+ObjetoEstatico pasarelaFalsa "pasarela"
+with
+    esta_en CAMINO_DE_RONDA_OESTE CAMINO_DE_RONDA_ESTE,
+    nombre 'pasarela' 'puente' 'madera',
+    descripcion
+        "Es una endeble pasarela, sin importancia por otra parte.
+         Está claro que los del castillo todavía no consideran encontrarse
+         en una situación desesperada."
+has oculto;
+
+ObjetoEstatico fosoFalso "foso"
+with
+	nombre 'foso' 'cauce',
+	esta_en CAMINO_DE_RONDA_OESTE CAMINO_DE_RONDA_ESTE,
+	descripcion "Puedes ver, hacia abajo, un gran foso que corre
+	             de este a oeste, frente al castillo.
+	             No es un foso forrado con roca, sino que está directamente
+	             excavado en la tierra, por lo que exhibe varias
+	             irregularidades, hasta el punto de que podrías bajar
+	             por su pared.",
+	antes [;
+		bajar:
+			if ( localizacion == CAMINO_DE_RONDA_OESTE )
+					jugadorA( FOSO_OESTE, 2 );
+			else 	jugadorA( FOSO_ESTE, 2 );
+
+			rtrue;
+	]
+;
+
+! [Debe haber alguna forma de poder saber si los soldados están fuera en ese momento o no]
+
+Habitacion COCINAS "Cocinas"
+class Palacio
+with
+	descripcion [;
+		Conseguido( TAREA_ENTRAR_EN_TUNEL );
+		" Las cocinas del castillo permiten salir hacia el norte,
+		  mediante un pequeño portillo disimulado entre dos estanterías,
+		  y hacia el sur mediante un arco.
+		  Innumerables baldas contienen multitud de frascos,
+		  potas y cubiertos de todo tipo. Una gran chimenea tiene una pota al fuego. ";
+	],
+	al_s PASILLO_NORESTE,
+	al_n portilloCocinas,
+has valepuntos;
+
+ObjetoEstatico estanteriaMulti "estanterias"
+with
+	esta_en COCINAS ALMACENES CABANA,
+	nombre_f 'estanteria' 'balda',
+	nombre_m 'estante',
+	nombre_fp 'estanterias' 'baldas',
+	nombre_mp 'estantes',
+	genero G_FEMENINO + G_PLURAL,
+	descripcion "Sobre las estanterías hay objetos diversos."
+has femenino nombreplural soporte;
+
+ObjetoEstatico utensiliosCocinas "utensilios de cocina"
+with
+	esta_en [;
+		if ( localizacion == COCINAS )
+			 rtrue;
+		else rfalse;
+	],
+	nombre_mp 'frascos' 'utensilios' 'cubiertos' 'artefactos' 'objetos',
+	genero G_MASCULINO + G_PLURAL,
+	nombre_fp 'potas',
+	descripcion "Variados artefactos, potas, cubiertos... se agolpan en las estanterías."
+has nombreplural;
+
+Conexion portilloCocinas "portillo de las cocinas"
+with
+	articulo "el",
+	nombre 'portillo' 'cocinas',
+	descripcion "Es un pequeño, aunque fuerte, portillo.",
+	reaccionar_antes [;
+		entrar:
+			if ( localizacion == COMIENZO_DEL_PASADIZO_DE_ESCAPE ) {
+				<<ir obj_s>>;
+			}
+		salir:
+			if ( localizacion == COCINAS ) {
+				<<ir obj_n>>;
+			}
+	]
+;
+
+Habitacion COMIENZO_DEL_PASADIZO_DE_ESCAPE "Comienzo del pasadizo de escape"
+class Laberinto
+with
+	descripcion " El pasadizo de escape comienza aquí desde las dependencias del castillo,
+				 mediante un portillo de acceso al sur, y corre hacia el exterior, al oeste.
+				 Bajo el portillo se cuela una rendija de luz,
+				 que contrasta con la semioscuridad en la que te mueves.",
+	al_s portilloCocinas,
+	al_o PASADIZO_DE_ESCAPE,
+;
+
+! [Aquí consigues la llave maestra]
+
+Palacio DESPACHO_DEL_OFICIAL_DE_GUARDIA
+with
+          nombre_corto "Despacho del oficial de guardia",
+	descripcion " Una estancia muy amplia sirve de despacho para el oficial de guardia,
+				 sentado a una mesa en el centro de la misma.
+				 Ahora que el castillo está asedidado por las tropas del Rey,
+				 hay bastante actividad en el lugar,
+				 con otros oficiales discutiendo separadamente en otra mesa. ",
+	al_e PASILLO_DE_SERVICIO
+;
+
+ObjetoEstatico mesaOficialGuardia "mesa" DESPACHO_DEL_OFICIAL_DE_GUARDIA
+with
+	nombre 'mesa',
+	descripcion "Sobre la mesa ves diversos objetos, entre ellos, una llave especialmente grande,
+	             que parece una llave maestra."
+has femenino soporte;
+
+! [Si entras aquí, Lady Ingrain da la voz de alarma]
+
+Palacio DORMITORIOS_REALES "Dormitorios reales"
+class Habitacion
+with
+	descripcion [;
+		print " La estancia resulta ser, sin duda, la de los dormitorios reales.
+		        Una gran cama se sitúa contra la pared norte,
+		        mientras todo tipo de rico mobiliario se encuentra a tu alrededor.
+		        El escudo del duque de cornualles está situado sobre la cama. ";
+
+		print "^^Una dama reposa sobre la cama. Cuando os ve, segura de no conoceros,
+		       comienza a gritar pidiendo a auxilio a la guardia...^";
+
+		banderafin = 1;
+	],
+	al_s puertaDormitorio,
+
+;
+
+ConexionAbrible puertaDormitorio "puerta"
+with
+	esta_en PASILLO_NOROESTE,
+	nombre 'puerta',
+	adjetivos 'lujosa',
+	descripcion "Una lujosa, aunque fuerte, puerta.",
+	laLLave llaveMaestra,
+	antes [;
+		abrir:
+			if ( llaveMaestra in jugador ) {
+				if ( patrullaNorte in localizacion ) {
+					banderafin = 1;
+					"La patrulla de soldados os observa abrir la puerta y se abalanza sobre
+					 vosotros, impidiéndooslo.^No creo que las celdas del castillo de Cornualles
+					 sean más cómodas que las de Westmorland... especialmente para Uther...^
+					 Sólo es cuestión de tiempo...";
+				}
+
+				jugador.ponMisionCumplida();
+
+				print "^^En cuanto abres la puerta, Uther recupera la poción que le dió Merlín
+				         de entre sus ropas y
+				         se interna en el umbral. La puerta se cierra...";
+				print "^Esperas pacientemente, durante unos instantes, frente a la puerta.";
+				wait( "...^" );
+				print "^Uther vuelve a salir. Respira agitadamente, y sus ropajes están arrugados.^";
+
+				jugador.decir( "¿Ya?" );
+
+				print "Uther se te queda mirando, sin decir nada.";
+				wait( "^...^" );
+
+				uther.decir( "Volvamos con Merlín, Ulfius." );
+
+				if ( ~~( uther.haHabladoEnCastillo() ) ) {
+				    print "^~Me gustaría darte mi verdadera opinión
+				         sobre esta misión.~ - Piensas.";
+				}
+
+				print "^";
+				rtrue;
+			}
+			else "Necesitas una llave para esta puerta...";
+	],
+	reaccionar_antes [;
+		entrar:
+			if ( localizacion == PASILLO_NOROESTE ) {
+				<<ir obj_n>>;
+			}
+		salir:
+			if ( localizacion == DORMITORIOS_REALES ) {
+				<<ir obj_s>>;
+			}
+	]
+has femenino;
+
+ExteriorPalacio ESQUINA_NORESTE_DEL_CASTILLO "Esquina noreste del castillo"
+private
+	salidaNoroeste false,
+with
+	ponSalidaVista [;
+		self.salidaNoroeste = true;
+	],
+	fueSalidaVista [;
+		return self.salidaNoroeste;
+	],
+	descripcion " El camino de ronda rodea la esquina noreste del castillo.
+	              Sólo puedes avanzar por el camino al sur,
+	              ya que las otras direcciones está cortadas por el mar, las rocas, y
+	              el muro del castillo."
+	,
+	al_s CAMINO_DE_RONDA_ESTE,
+	al_no [;
+		if ( ~~self.fueSalidaVista() ) {
+			"No puedes ir por ahí.";
+		}
+
+		print "Pasas por las rocas como puedes...^";
+		jugadorA( MURO_TRASERO_DEL_CASTILLO, 2 );
+		rtrue;
+	]
+;
+
+Laberinto FINAL_DEL_PASADIZO_DE_ESCAPE "Final del pasadizo de escape"
+class Habitacion
+with
+	nombre_corto [;
+		give self ~luz;
+	],
+	descripcion " El portillo abre el acceso a un pasadizo del castillo,
+	              tenuemente iluminado por unas rendijas entre las piedras del muro
+	              exterior del castillo. Las paredes son absolutamente lisas aquí.
+	              El muro exterior se ve manchado por la humedad aquí y allí,
+	              especialmente en su parte baja. El pasadizo continúa hacia el este.",
+	al_e PASADIZO_DE_ESCAPE,
+	al_n portilloExterior,
+;
+
+LocalidadConLuz FOSO_ESTE "Foso este"
+with
+	descripcion " De alguna forma, te mantienes en pie, bien en una piedra o bien en un trozo de tierra que se establece como saliente sobre el foso. Podrías trepar por la pared del foso.",
+	al_e [; return mar.noNadar(); ],
+	al_o FOSO_OESTE,
+	arriba CAMINO_DE_RONDA_ESTE
+;
+
+LocalidadConLuz FOSO_OESTE "Foso oeste"
+with
+	descripcion " No puedes casi mantenerte en pie. Te asientas sobre una gran piedra que se mantiene por encima del nivel del agua. El mar embravecido transmite sus envites por el foso, que corre de este a oeste. Podrías trepar por la pared del foso.",
+	al_o [; return mar.noNadar(); ],
+	al_e FOSO_ESTE,
+	arriba CAMINO_DE_RONDA_OESTE	,
+
+;
+
+ObjetoEstatico interiorFosoFalso FOSO_OESTE
+with
+    nombre_m 'foso' 'tierra' 'pared' 'agujero',
+    nombre_mp 'paredes',
+    genero G_MASCULINO,
+    esta_en FOSO_ESTE FOSO_OESTE,
+    descripcion
+        "El foso corre de este a oeste. Podrías avanzar por el mismo, aunque
+         con dificultad, en estas dos direcciones. También
+         podrías subir por sus paredes.",
+    reaccionar_antes [;
+        trepar:
+            <<ir obj_arriba>>;
+    ]
+has oculto;
+
+Palacio HALL "Hall"
+with
+	descripcion " El pasillo principal del castillo da acceso al rastrillo, y por él, al exterior del castillo, así como a la sala del trono, al norte. Al este se encuentra el pasillo sureste.",
+	al_n SALA_DE_GOBIERNO,
+	al_s RASTRILLO_DE_ENTRADA,
+	al_e PASILLO_SURESTE,
+	al_o PASILLO_SUROESTE,
+
+;
+
+! [Aquí se debe poder encontrar un túnel que conducirá a un portillo de acceso al castillo]
+
+ExteriorPalacio MURO_TRASERO_DEL_CASTILLO "Muro trasero del castillo"
+with
+	descripcion " El muro de la parte trasera del castillo es tan liso como cualquiera de
+	             los vistos anteriormente.
+	             El mar rompe peligrosamente en las rocas hacia el norte,
+	             y sus salpicaduras llegan a caer sobre ti de vez en cuando.
+	             Toda esta parte de la superficie de ronda del castillo es muy rocosa,
+	             acumulándose las rocas especialmente hacia el sureste y el suroeste. ",
+	al_se [;
+		print "Gateas por entre las rocas...^";
+		jugadorA( ESQUINA_NORESTE_DEL_CASTILLO, 2 );
+		rtrue;
+	]
+;
+
+ObjetoEstatico rocas "rocas"
+with
+	nombre_m 'rompiente' 'canto',
+	nombre_f 'roca' 'piedra',
+	nombre_fp 'rocas' 'piedras',
+	nombre_mp 'cantos' 'rompientes',
+	genero G_PLURAL + G_FEMENINO,
+	esta_en MURO_TRASERO_DEL_CASTILLO ROMPIENTE_OESTE ESQUINA_NORESTE_DEL_CASTILLO CAMINO_DE_RONDA_OESTE
+	        FOSO_ESTE FOSO_OESTE,
+	descripcion [;
+		print "Las rocas se amontonan unas contra otras, húmedas y resbaladizas, en casi todas
+		       direcciones.^";
+
+		if ( localizacion == MURO_TRASERO_DEL_CASTILLO ) {
+		    move tabla to MURO_TRASERO_DEL_CASTILLO;
+		    move entradaTunel to MURO_TRASERO_DEL_CASTILLO;
+
+			print "Hacia el rompiente norte,
+			       distingues una tabla disimulada entre las rocas.^";
+		}
+		else
+		if ( localizacion == ESQUINA_NORESTE_DEL_CASTILLO ) {
+			ESQUINA_NORESTE_DEL_CASTILLO.ponSalidaVista();
+			print "Puedes ver un paso a través de las rocas, al noroeste.^";
+		}
+		else
+		if ( localizacion == CAMINO_DE_RONDA_OESTE
+		  && barraHierro in limbo )
+		{
+			move barraHierro to localizacion;
+			print "Entre las rocas, encuentras una barra de hierro...^";
+		}
+
+		rtrue;
+	],
+	antes [;
+		buscarEn: <<examinar self>>;
+	],
+	reaccionar_antes [;
+		nadar:
+			"¡Te ahogarías...! Además, pero si es de noche... ¡apenas sí se vislumbra nada!";
+	]
+;
+
+ObjetoEstatico mar "mar"
+with
+	noNadar [;
+	    "Me temo que no sé nadar. No lo suficiente, en cualquier caso,
+	     como para evitar ahogarme en un mar embravecido. Además, está
+	     Uther.";
+	],
+	nombre 'mar' 'agua' 'oceano',
+	esta_en MURO_TRASERO_DEL_CASTILLO ROMPIENTE_OESTE
+	        ESQUINA_NORESTE_DEL_CASTILLO CAMINO_DE_RONDA_OESTE
+	        CAMINO_DE_RONDA_ESTE FOSO_ESTE FOSO_OESTE,
+	descripcion "Agitadas aguas... ¡No te gustaría caer ahi dentro!"
+;
+
+ObjetoEstatico tabla "tabla" limbo
+private
+	quitado false,
+with
+	fueQuitado [;
+		return self.quitado;
+	],
+	nombre_f 'tabla',
+	genero G_FEMENINO,
+	nombre_m 'tablon',
+	nombre_mp 'tablones',
+	nombre_fp 'tablas',
+	descripcion [;
+		if ( self.fueQuitado() )
+				"La tabla, ligeramente apartada ahora, taponaba un hueco entre las rocas.";
+		else 	"La tabla parece tapar la entrada a un estrecho hueco
+		          entre las rocas.";
+	],
+	antes [;
+	    cortar:
+	        if ( espada in jugador )
+	                "Es demasiado gruesa como para cortarla a tajazos.";
+	        else    "Aún teniendo tu espada, no podrías cortarla, es demasiado gruesa.";
+	    abrir:
+	        if ( barraHierro in jugador )
+	                <<levantarCon self barraHierro>>;
+	        else    <<empujar self>>;
+		empujar:
+		    if ( barraHierro in jugador ) {
+		        <<levantarCon self barraHierro>>;
+		    }
+
+		    "La tabla se mueve un poco, aunque no podrías apartarla.";
+		MirarDebajo, tirar:
+		    if ( barraHierro in jugador ) {
+		        <<levantarCon self barraHierro>>;
+		    }
+
+			"Lo intentas con todas tus fuerzas, pero no eres capaz de hacerlo...";
+		levantarCon:
+			if ( otro ~= barraHierro ) {
+				<<tirar tabla>>;
+			}
+
+			if ( ~~( self.quitado ) ) {
+        			self.quitado = true;
+		        	"Haciendo palanca con la barra, levantas esforzadamente la tabla,
+			     para que no sea más un obstáculo.";
+			}
+			else "Ya no tiene sentido.";
+	]
+;
+
+ObjetoEstatico entradaTunel "tunel" limbo
+with
+	nombre 'tunel' 'oquedad' 'cueva' 'hueco' 'entrada',
+	descripcion
+	    "Una pequeña cueva se encuentra disimulada entre las rocas.
+	     Parece la entrada de un pequeño túnel que avanza hacia el castillo,
+	     al sur.",
+	entrarEnTunel [;
+		if ( tabla.fueQuitado() ) {
+			print "^Te adentras, casi gateando, en la cueva...^";
+			jugadorA( TUNEL_DE_ESCAPE, 2 );
+			rtrue;
+		}
+		else "Los tablones te impiden el paso...";
+	],
+	reaccionar_antes [;
+	    abrir:
+	        <<empujar tabla>>;
+		entrar: return self.entrarEnTunel();
+		ir:
+			if ( uno == obj_s
+			  && self notin limbo )
+			{
+			    print "^Caminas hacia el norte, hasta la entrada del túnel
+			           semioculto entre las rocas, con la intención de utilizarlo
+			           para ir hacia el sur, el castillo...^";
+				return self.entrarEnTunel();
+			}
+	],
+	antes [;
+		meterse: return self.entrarEnTunel();
+	]
+;
+
+LocalidadSinLuz PASADIZO_DE_ESCAPE "Pasadizo de escape"
+with
+	descripcion " El pasadizo de escape corre de este a oeste. La luz de luna ilumina tenuemente el pasadizo.",
+	al_e COMIENZO_DEL_PASADIZO_DE_ESCAPE,
+	al_o FINAL_DEL_PASADIZO_DE_ESCAPE,
+
+;
+
+Palacio PASILLO_DE_SERVICIO
+with
+          nombre_corto "Pasillo de servicio",
+	descripcion " Un estrecho pasillo de servicio da acceso a las dos únicas estancias de la
+	              planta superior: una armería (deduces que lo es, puesto que desde aquí se
+	              ven multitud de armas), al norte, y una estancia donde se ve gran actividad,
+	              al oeste.
+	              Al este un pequeño arco conduce al torreón, mientras que unas
+				 escaleras de piedra permiten volver al nivel de la planta baja.",
+	al_n ARMERIA,
+	al_o [;
+		if ( ~~oficialDeGuardia.estaIniciado() ) {
+			oficialDeGuardia.prepararOficialDeGuardia();
+		}
+
+		jugadorA( DESPACHO_DEL_OFICIAL_DE_GUARDIA, 2 );
+		rtrue;
+	],
+	al_e TORREON,
+	abajo PASILLO_SURESTE,
+has valepuntos;
+
+ObjetoEstatico pasilloFalso "pasillo" PASILLO_DE_SERVICIO
+with
+    nombre 'pasillo' 'corredor' 'tunel' 'pasadizo',
+    esta_en PASILLO_DE_SERVICIO PASADIZO_DE_ESCAPE TORREON
+            ARMERIA DESPACHO_DEL_OFICIAL_DE_GUARDIA
+            PASILLO_NOROESTE PASILLO_NORESTE PASILLO_NORTE
+            PASILLO_SURESTE PASILLO_SUROESTE HALL
+            COMIENZO_DEL_PASADIZO_DE_ESCAPE FINAL_DEL_PASADIZO_DE_ESCAPE
+            TUNEL_DE_ESCAPE TUNEL_DE_ESCAPE2
+            PASILLO_PRINCIPAL,
+    descripcion "No tiene nada de particular, en realidad.",
+    antes [;
+        examinar: rfalse;
+        default: "Eso serviría más bien de poco.";
+    ]
+;
+
+ObjetoEstatico salaFalso "sala" COCINAS
+with
+    nombre 'sala' 'estancia' 'camara' 'habitacion',
+    esta_en ALMACENES COCINAS BODEGA SALA_DE_GOBIERNO DESPACHO_DEL_OFICIAL_DE_GUARDIA
+            TORREON ARMERIA DORMITORIOS_REALES
+            SALA_DEL_TRONO,
+    descripcion "Nada reseñable en la estancia en sí, me temo.",
+    antes [;
+        examinar: rfalse;
+        default: "Eso serviría más bien de poco.";
+    ]
+;
+
+Palacio TORREON
+with
+          nombre_corto "Torreón",
+	descripcion
+		"Desde el torreón se puede vigilar gran parte del territorio circundante, hacia el suroeste."
+	,
+	al_o PASILLO_DE_SERVICIO
+;
+
+ObjetoEstatico torreonFalso "torreón" TORREON
+with
+    nombre 'torre' 'torreon' 'atalaya',
+    descripcion [; << mirar >>; ],
+    antes [;
+        examinar: rfalse;
+        default: "No parece una buena idea.";
+    ]
+;
+
+! [habrá guardias circulando de este a oeste, del pasillo noroeste al noreste]
+
+Palacio PASILLO_NORESTE "Pasillo noreste"
+with
+	descripcion " Hacia el norte están las cocinas, mientras que también se puede caminar hacia la parte oeste del castillo.
+	              Una pared bloquea el paso hacia el sur. Varias antorchas, situadas demasiado alto como para alcanzarlas, iluminan el corredor. ",
+	al_n COCINAS,
+	al_o PASILLO_NORTE,
+
+;
+
+Palacio PASILLO_NOROESTE "Pasillo noroeste"
+class Habitacion
+with
+	descripcion " El pasillo realiza un giro de noventa grados. Es posible ir hacia el este, el resto del pasillo norte, o al pasillo sur. Una suntuosa puerta conduce hacia el norte.",
+	al_n puertaDormitorio,
+	al_s PASILLO_SUROESTE,
+	al_e PASILLO_NORTE
+;
+
+Palacio PASILLO_NORTE "Pasillo norte"
+with
+	descripcion " El pasillo permite caminar hacia los extremos del castillo,
+	              al este y al oeste.
+	              También es posible acceder a sendas estancias a
+	              través de arcos al norte y al sur.
+	              Varias antorchas, situadas demasiado alto como
+	              para alcanzarlas, iluminan el corredor.",
+	al_n ALMACENES,
+	al_s BODEGA,
+	al_e PASILLO_NORESTE,
+	al_o PASILLO_NOROESTE,
+
+;
+
+Palacio PASILLO_SURESTE "Pasillo sureste"
+with
+	descripcion " El pasillo sureste permite el acceso a la planta superior del castillo, mediante unas escaleras de piedra,
+	              y caminar hacia la parte oeste del castillo.",
+	al_o HALL,
+	arriba PASILLO_DE_SERVICIO,
+
+;
+
+Palacio PASILLO_SUROESTE "Pasillo suroeste"
+with
+	descripcion " El pasillo realiza un giro de noventa grados, pudiendo acceder al pasillo norte, y hacia el pasillo principal al este.",
+	al_n PASILLO_NOROESTE,
+	al_e HALL,
+
+;
+
+ExteriorPalacio RASTRILLO_DE_ENTRADA "Rastrillo de entrada"
+with
+	descripcion [;
+		print " Al este y al oeste continúa el camino principal que permite al castillo
+		        comunicarse y comerciar con el resto del valle, que domina y protege.
+		        Al norte se encuentra la puerta de entrada principal del castillo,
+		        a través del rastrillo."
+		;
+
+		if ( uniformes has puesto ) {
+			print "^^Uno de los guardias se os queda mirando fijamente, como si vuestros disfraces no
+			         le engañaran... efectivamente, se arma un gran revuelo cuando el soldado
+			         da la voz de alarma, y...^^"
+			;
+		}
+		else {
+			print "^^Al veros, los guardias del rastrillo os apresan. ¡No puede pasearse uno por ahí
+			       con el castillo sitiado!^^"
+			;
+		}
+
+		banderafin = 1;
+	],
+	al_n HALL,
+	al_e SURESTE_DEL_CASTILLO,
+	al_o SUROESTE_DEL_CASTILLO,
+
+;
+
+! [Sería interesante montar un pequeño puzzle con la forma de avisar al remero para que se aproxime]
+
+ExteriorPalacio ROMPIENTE_OESTE "Rompiente oeste"
+with
+	descripcion " Hacia el noreste, el camino termina abruptamente, ya que el espacio se reduce y el muro exterior del castillo cae directamente sobre el mar. La única salida posible es volver hacia el sur. Un pequeño pontón se encuentra hacia el oeste.   ",
+	al_s CAMINO_DE_RONDA_OESTE,
+
+;
+
+ObjetoEstatico embarcadero "Embarcadero" ROMPIENTE_OESTE
+with
+	nombre 'ponton' 'embarcadero' 'puerto' 'amarre',
+	descripcion "Un pequeño pontón donde pueden amarrar sólo pequeñas barcas.",
+;
+
+! [Si entras aquí, te pillan, si no llevas puesto el uniforme]
+
+Palacio SALA_DE_GOBIERNO "Sala de gobierno"
+with
+	descripcion [;
+		print " La sala de gobierno está medio en penumbra.
+		        Puedes ver los tronos del Duque de Cornualles y de su esposa,
+		        Lady Ingrain.
+		        Algún personal (incluyendo soldados y personal de servicio)
+		        presta su servicio aún a estas horas. ";
+
+		print "^^De repente, alguien os señala y empieza a gritaros cosas que no entendéis.
+		       Está claro que no se espera que ";
+
+		if ( uniformes in jugador )
+				print " la soldadesca ";
+		else		print " dos extraños ";
+
+		print "entren en la sala de gobierno...";
+
+		banderafin = 1;
+	],
+	al_n PASILLO_SURESTE,
+	al_s HALL,
+
+;
+
+ExteriorPalacio SURESTE_DEL_CASTILLO "Sureste del castillo"
+with
+	descripcion " El camino principal, que pasa por delante del castillo, corre de este a oeste. Hacia el norte parte lo que parece ser un camino de ronda.",
+	al_n CAMINO_DE_RONDA_ESTE,
+	al_o RASTRILLO_DE_ENTRADA,
+    al_e "El camino se interna en el valle, y en la oscuridad.
+          No tiene sentido ir por ahí ahora."
+;
+
+ExteriorPalacio SUROESTE_DEL_CASTILLO "Suroeste del castillo"
+with
+	descripcion " El castillo de Cornualles se alza imponente al noreste.
+	              El camino principal corre de este a oeste.
+	              Al este, está la entrada al mismo,
+	              ya que habéis parado en un lateral del rastrillo,
+	              protegidos de los guardias de la puerta principal
+	              por unos arbustos, para evitar ser vistos.
+	              Lo que parece ser un pequeño camino de ronda
+	              parte hacia el norte.",
+	al_n CAMINO_DE_RONDA_OESTE,
+	al_e RASTRILLO_DE_ENTRADA,
+    al_ne "Las murallas del castillo impiden avanzar.
+          Es posible ir al norte y al este.",
+    al_o "El camino por el que vino el carruaje se pierde en la oscuridad.
+          No tiene sentido ir por ahí ahora mismo."
+;
+
+ObjetoEstatico caminoFalso "camino" SUROESTE_DEL_CASTILLO
+with
+    esta_en SUROESTE_DEL_CASTILLO SURESTE_DEL_CASTILLO RASTRILLO_DE_ENTRADA
+            CAMINO_DE_RONDA_OESTE CAMINO_DE_RONDA_ESTE ROMPIENTE_OESTE
+            ESQUINA_NORESTE_DEL_CASTILLO,
+    nombre 'camino' 'senda' 'vereda' 'carretera' 'via' 'ronda',
+    descripcion
+        "El camino serpentea bajo tus pies.",
+    antes [;
+        examinar: rfalse;
+        default: "Los guardias del rastrillo y el rastrillo propiamente dicho,
+                  están muy lejos.
+                  Desde aquí sólo puedes verlos.";
+    ]
+has oculto;
+
+ObjetoEstatico guardias "guardias" SUROESTE_DEL_CASTILLO
+with
+    nombre_f 'puerta' 'entrada',
+    nombre_m 'guardia' 'rastrillo',
+    nombre_mp 'guardias',
+    genero G_MASCULINO,
+    descripcion
+        "A través de los arbustos, veis cómo Los guardias protegen el castillo.
+         Está claro que al estar sitiados, la seguridad será altísima, aunque no deben
+         considerar su situación crítica, ya que el rastrillo no está bajado, ni el
+         puente levadizo subido.",
+    antes [;
+        examinar: rfalse;
+        default: "Los guardias del rastrillo y el rastrillo propiamente dicho,
+                  están muy lejos.
+                  Desde aquí sólo puedes verlos.";
+    ]
+has oculto;
+
+ObjetoEstatico arbustosCamuflaje "arbustos" SUROESTE_DEL_CASTILLO
+with
+    nombre_mp 'arbustos',
+    nombre_m 'arbusto',
+    genero G_MASCULINO,
+    descripcion
+        "Arbustos no demasiado llamativos, pero sí lo suficientemente tupidos
+         como para que los guardias del castillo no os vean, mientras vosotros
+         podéis observarlos con seguridad a través de sus ramas."
+has nombreplural oculto;
+
+! [Deberá utilizarse una antorcha como fuente de luz, escondida en la entrada del túnel.]
+
+InteriorCueva TUNEL_DE_ESCAPE "Túnel de escape"
+with
+      comprobarAntorcha [;
+           if ( antorcha in jugador
+             && antorcha has luz )
+           {
+                 print "Uther te sujeta por un brazo, cuando estás a punto
+                        salir por la abertura...^";
+                 Uther.decir( "¡Ulfius...!¡La antorcha...!¡Nos verán!" );
+                 rfalse;
+           }
+
+           rtrue;
+      ],
+      descripcion " El túnel es pedregoso y húmedo.
+	              Por su estrechez y baja altura, debes arrastrarte por el suelo,
+	              que resbala peligrosamente.
+	              Sería posible salir del túnel, o adentrarse un poco más hacia el sur.",
+      al_s TUNEL_DE_ESCAPE2,
+      al_n [;
+            if ( self.comprobarAntorcha() ) {
+                 jugadorA( MURO_TRASERO_DEL_CASTILLO, 2 );
+                 rtrue;
+            }
+            rtrue;
+      ],
+      afuera  [;
+            if ( self.comprobarAntorcha() ) {
+                 jugadorA( MURO_TRASERO_DEL_CASTILLO, 2 );
+                 rtrue;
+            }
+            rtrue;
+      ]
+;
+
+InteriorCueva TUNEL_DE_ESCAPE2 "Túnel de escape"
+class Habitacion
+with
+	al_n TUNEL_DE_ESCAPE,
+	al_s portilloExterior,
+	nombre_corto [;
+		give self ~luz;
+	],
+	descripcion
+				"La oscuridad -y la humedad- son más densas aquí. Es posible retroceder hacia el
+	             norte para volver a la entrada del túnel, o avanzar hacia el sur
+	             a través de un pequeño portillo de acceso."
+;
+
+ConexionAbrible portilloExterior "portillo exterior"
+with
+	nombre 'portillo' 'exterior',
+	descripcion "El portillo es muy fuerte, si bien la humedad está empezando a degradarlo.",
+	laLLave llavePortillo,
+	antes [;
+		abrir:
+			if ( llavePortillo in jugador ) {
+				give self abierta;
+				move llavePortillo to TUNEL_DE_ESCAPE2;
+				"Abres el portillo... dejas la llave aquí,
+				 pues sabes que no te hará falta...";
+			} else "Está cerrado con llave...";
+	],
+	reaccionar_antes [;
+		entrar:
+			if ( localizacion == TUNEL_DE_ESCAPE2 ) {
+				<<ir obj_s>>;
+			}
+		salir:
+			if ( localizacion == FINAL_DEL_PASADIZO_DE_ESCAPE ) {
+				<<ir obj_n>>;
+			}
+	]
+;

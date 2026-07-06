@@ -1,0 +1,6 @@
+# Executables
+*.z5
+*.z8
+
+# Distribution
+*.zip
