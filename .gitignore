@@ -4,7 +4,3 @@
 
 # Distribution
 *.zip
-dist/
-
-# Allow trono.z5 at root
-!/trono.z5
