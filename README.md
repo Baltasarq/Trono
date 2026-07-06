@@ -8,6 +8,8 @@ El Rey os manda llamar a ti, Ulfius, uno de los más aguerridos caballeros
 del Rey, para realizar una importante misión ...
 Una misión que cambiará la forma de entender tu vida.
 
+![Castillo](publish/castillo.jpg)
+
 ## Instrucciones para jugar
 
 Sólo es necesario tener un intérprete de máquina Z, como por ejemplo [WinFrotz](https://davidkinder.co.uk/frotz.html) o [Gargoyle](https://ccxvii.net/gargoyle/), para jugar esta aventura. Si se desea jugar online, se puede utilizar [Parchment](https://iplayif.com/).
@@ -42,8 +44,9 @@ sino que me gustaría que se hiciera.
 
 ## Autores
 
-Selena: selenavirtual@yahoo.com.ar
-Baltasar: baltasarq@gmail.com
+- Selena: selenavirtual@yahoo.com.ar
+
+- Baltasar: baltasarq@gmail.com
 
 ## Construcción
 
