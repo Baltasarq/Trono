@@ -19,10 +19,6 @@ proporcionado. Normalmente, se puede dar el nombre del juego en el momento de ej
 
     $ gargoyle trono.z5
 
-## Jugar online
-
-[Jugar a El Trono de Inglaterra](https://github.com/Baltasarq/Trono/raw/refs/heads/main/dist/trono.z5.html), ¡ahora!
-
 ## Agradecimientos
 
 Para la realización de esta aventura se ha empleado la fantástica herramienta
