@@ -19,6 +19,10 @@ proporcionado. Normalmente, se puede dar el nombre del juego en el momento de ej
 
     $ gargoyle trono.z5
 
+## Jugar online
+
+[¡Jugar "El Trono de Inglaterra" ahora!](https://iplayif.com/ https://github.com/Baltasarq/Trono/blob/main/trono.z5)
+
 ## Agradecimientos
 
 Para la realización de esta aventura se ha empleado la fantástica herramienta
