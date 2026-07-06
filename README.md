@@ -21,7 +21,7 @@ proporcionado. Normalmente, se puede dar el nombre del juego en el momento de ej
 
 ## Jugar online
 
-[¡Jugar "El Trono de Inglaterra" ahora!](https://iplayif.com/ https://github.com/Baltasarq/Trono/blob/main/trono.z5)
+[Jugar "El Trono de Inglaterra"](https://iplayif.com/ https://github.com/Baltasarq/Trono/blob/main/trono.z5), ¡ahora!
 
 ## Agradecimientos
 
