@@ -21,7 +21,7 @@ proporcionado. Normalmente, se puede dar el nombre del juego en el momento de ej
 
 ## Jugar online
 
-[Jugar a El Trono de Inglaterra](dist/trono.z5.html), ¡ahora!
+[Jugar a El Trono de Inglaterra](raw/refs/heads/main/dist/trono.z5.html), ¡ahora!
 
 ## Agradecimientos
 
